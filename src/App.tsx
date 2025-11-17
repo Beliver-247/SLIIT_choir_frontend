@@ -8,6 +8,7 @@ import { Footer } from "./components/Footer";
 import { Navigation } from "./components/Navigation";
 import { MembersPortal } from "./components/MembersPortal";
 import { LoginModal } from "./components/LoginModal";
+import { RegistrationModal } from "./components/RegistrationModal";
 import AuthSuccess from "./components/AuthSuccess";
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
   });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const [memberName, setMemberName] = useState("");
 
   useEffect(() => {
@@ -34,21 +36,7 @@ export default function App() {
         console.error("Failed to parse member data:", error);
       }
     }
-
-    // Listen for userLoggedIn events from Google OAuth callback
-    const handleUserLoggedIn = (event: Event) => {
-      const customEvent = event as CustomEvent;
-      const memberData = customEvent.detail;
-      setMemberName(`${memberData.firstName} ${memberData.lastName}`);
-      setIsLoggedIn(true);
-      setShowLoginModal(false);
-      setCurrentPage("members");
-    };
-
-    window.addEventListener("userLoggedIn", handleUserLoggedIn);
-    return () => window.removeEventListener("userLoggedIn", handleUserLoggedIn);
   }, []);
-
 
   // Sync currentPage with URL path on popstate (browser navigation)
   useEffect(() => {
@@ -62,9 +50,14 @@ export default function App() {
   }, []);
 
   const handleLoginClick = () => {
+    setShowRegistrationModal(false);
     setShowLoginModal(true);
   };
 
+  const handleRegisterClick = () => {
+    setShowLoginModal(false);
+    setShowRegistrationModal(true);
+  };
 
   const handleLogin = (name: string) => {
     setMemberName(name);
@@ -74,6 +67,13 @@ export default function App() {
     window.history.pushState({}, "", "/members");
   };
 
+  const handleRegister = (name: string) => {
+    setMemberName(name);
+    setIsLoggedIn(true);
+    setShowRegistrationModal(false);
+    setCurrentPage("members");
+    window.history.pushState({}, "", "/members");
+  };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -83,7 +83,6 @@ export default function App() {
     localStorage.removeItem("authToken");
     localStorage.removeItem("member");
   };
-
 
   const navigateToHome = () => {
     setCurrentPage("home");
@@ -120,6 +119,14 @@ export default function App() {
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
         onLogin={handleLogin}
+        onSwitchToRegister={handleRegisterClick}
+      />
+
+      <RegistrationModal 
+        isOpen={showRegistrationModal}
+        onClose={() => setShowRegistrationModal(false)}
+        onRegister={handleRegister}
+        onSwitchToLogin={handleLoginClick}
       />
     </div>
   );
