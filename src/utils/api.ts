@@ -160,4 +160,45 @@ export const api = {
       return api.request(`/donations/${id}`, { method: 'DELETE' });
     },
   },
+
+  // Practice Schedules endpoints
+  schedules: {
+    getAll(filters?: Record<string, any>) {
+      const params = new URLSearchParams(filters);
+      return api.request(`/schedules?${params}`);
+    },
+
+    getById(id: string) {
+      return api.request(`/schedules/${id}`);
+    },
+
+    create(data: Record<string, any>) {
+      return api.request('/schedules', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    update(id: string, data: Record<string, any>) {
+      return api.request(`/schedules/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
+    delete(id: string) {
+      return api.request(`/schedules/${id}`, { method: 'DELETE' });
+    },
+
+    markAttendance(id: string, memberId: string, status: 'present' | 'absent' | 'excused') {
+      return api.request(`/schedules/${id}/attendance`, {
+        method: 'POST',
+        body: JSON.stringify({ memberId, status }),
+      });
+    },
+
+    getAttendance(id: string) {
+      return api.request(`/schedules/${id}/attendance`);
+    },
+  },
 };

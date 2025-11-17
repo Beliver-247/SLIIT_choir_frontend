@@ -1,91 +1,47 @@
-import { Calendar, Clock, MapPin, ShoppingBag, Download, Music } from "lucide-react";
+import { Calendar, ShoppingBag, Download, Music } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import PracticeSchedules from "./PracticeSchedules";
 
 interface MembersPortalProps {
   memberName: string;
 }
 
 export function MembersPortal({ memberName }: MembersPortalProps) {
-  const practiceSchedule = [
-    {
-      date: "November 18, 2025",
-      day: "Tuesday",
-      time: "6:00 PM - 8:00 PM",
-      location: "Music Room, Block A",
-      focus: "Christmas Carol Rehearsal",
-      conductor: "Dr. Sarah Fernando",
-      status: "upcoming"
-    },
-    {
-      date: "November 21, 2025",
-      day: "Friday",
-      time: "6:00 PM - 8:00 PM",
-      location: "Main Auditorium",
-      focus: "Full Ensemble Practice",
-      conductor: "Dr. Sarah Fernando",
-      status: "upcoming"
-    },
-    {
-      date: "November 25, 2025",
-      day: "Tuesday",
-      time: "6:00 PM - 8:00 PM",
-      location: "Music Room, Block A",
-      focus: "Sectional Rehearsals (SATB)",
-      conductor: "Assistant Conductors",
-      status: "upcoming"
-    },
-    {
-      date: "November 28, 2025",
-      day: "Friday",
-      time: "6:00 PM - 9:00 PM",
-      location: "Main Auditorium",
-      focus: "Carol Service Dress Rehearsal",
-      conductor: "Dr. Sarah Fernando",
-      status: "important"
-    },
-    {
-      date: "December 2, 2025",
-      day: "Tuesday",
-      time: "6:00 PM - 8:00 PM",
-      location: "Music Room, Block A",
-      focus: "Foundation Day Performance Prep",
-      conductor: "Dr. Sarah Fernando",
-      status: "upcoming"
-    }
-  ];
-
   const tshirtDesigns = [
     {
       id: 1,
       name: "Official Choir T-Shirt 2025",
       description: "Navy blue with gold SLIIT Choir logo",
       price: "LKR 1,500",
-      image: "https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0LXNoaXJ0JTIwbW9ja3VwfGVufDF8fHx8MTc2MzMzNTQxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      image:
+        "https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0LXNoaXJ0JTIwbW9ja3VwfGVufDF8fHx8MTc2MzMzNTQxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-      available: true
+      available: true,
     },
     {
       id: 2,
       name: "Performance Polo Shirt",
       description: "White polo with embroidered logo",
       price: "LKR 2,200",
-      image: "https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0LXNoaXJ0JTIwbW9ja3VwfGVufDF8fHx8MTc2MzMzNTQxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      image:
+        "https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0LXNoaXJ0JTIwbW9ja3VwfGVufDF8fHx8MTc2MzMzNTQxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       sizes: ["S", "M", "L", "XL", "XXL"],
-      available: true
+      available: true,
     },
     {
       id: 3,
       name: "Carol Service Special Edition",
       description: "Limited edition black with festive design",
       price: "LKR 1,800",
-      image: "https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0LXNoaXJ0JTIwbW9ja3VwfGVufDF8fHx8MTc2MzMzNTQxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      image:
+        "https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0LXNoaXJ0JTIwbW9ja3VwfGVufDF8fHx8MTc2MzMzNTQxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
       sizes: ["XS", "S", "M", "L", "XL"],
-      available: true
-    }
+      available: true,
+    },
   ];
 
   const resources = [
@@ -93,26 +49,26 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
       title: "Sheet Music - Christmas Carols 2025",
       type: "PDF",
       size: "2.4 MB",
-      updated: "Nov 10, 2025"
+      updated: "Nov 10, 2025",
     },
     {
       title: "Vocal Warm-up Exercises",
       type: "PDF",
       size: "890 KB",
-      updated: "Oct 15, 2025"
+      updated: "Oct 15, 2025",
     },
     {
       title: "Performance Guidelines",
       type: "PDF",
       size: "1.2 MB",
-      updated: "Sep 20, 2025"
+      updated: "Sep 20, 2025",
     },
     {
       title: "Choir Member Handbook 2025",
       type: "PDF",
       size: "3.1 MB",
-      updated: "Aug 1, 2025"
-    }
+      updated: "Aug 1, 2025",
+    },
   ];
 
   return (
@@ -121,7 +77,9 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
         {/* Welcome Header */}
         <div className="mb-8">
           <h1 className="text-blue-900 mb-2">Welcome back, {memberName}!</h1>
-          <p className="text-gray-600 text-xl">Access your practice schedules, resources, and merchandise</p>
+          <p className="text-gray-600 text-xl">
+            Access your practice schedules, resources, and merchandise
+          </p>
         </div>
 
         <Tabs defaultValue="schedule" className="space-y-6">
@@ -141,62 +99,18 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {practiceSchedule.map((practice, index) => (
-                    <div 
-                      key={index}
-                      className={`p-4 rounded-lg border-l-4 ${
-                        practice.status === "important" 
-                          ? "bg-orange-50 border-orange-500" 
-                          : "bg-white border-blue-500"
-                      }`}
-                    >
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <div>
-                              <div className="text-blue-900 mb-1">{practice.focus}</div>
-                              <div className="flex flex-wrap gap-3 text-sm text-gray-600">
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="h-4 w-4" />
-                                  {practice.date} ({practice.day})
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Clock className="h-4 w-4" />
-                                  {practice.time}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <MapPin className="h-4 w-4" />
-                                  {practice.location}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <p className="text-sm text-gray-600">
-                            Conductor: {practice.conductor}
-                          </p>
-                        </div>
-                        <div>
-                          {practice.status === "important" && (
-                            <Badge variant="destructive">Required</Badge>
-                          )}
-                          {practice.status === "upcoming" && (
-                            <Badge variant="secondary">Upcoming</Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {/* Real data from backend */}
+                <PracticeSchedules />
 
+                {/* Attendance Policy */}
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                   <div className="flex items-start gap-3">
                     <Music className="h-5 w-5 text-blue-600 mt-0.5" />
                     <div>
                       <div className="text-blue-900 mb-1">Attendance Policy</div>
                       <p className="text-sm text-blue-700">
-                        Please ensure you attend at least 80% of practice sessions. If you cannot attend, 
-                        inform the conductor at least 24 hours in advance.
+                        Please ensure you attend at least 80% of practice sessions. If you cannot
+                        attend, inform the conductor at least 24 hours in advance.
                       </p>
                     </div>
                   </div>
@@ -217,7 +131,10 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
               <CardContent>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {tshirtDesigns.map((design) => (
-                    <div key={design.id} className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                    <div
+                      key={design.id}
+                      className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                    >
                       <div className="aspect-square bg-gray-100 relative">
                         <ImageWithFallback
                           src={design.image}
@@ -233,12 +150,12 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
                       <div className="p-4">
                         <h3 className="text-blue-900 mb-2">{design.name}</h3>
                         <p className="text-sm text-gray-600 mb-3">{design.description}</p>
-                        
+
                         <div className="mb-3">
                           <div className="text-sm text-gray-600 mb-2">Available Sizes:</div>
                           <div className="flex flex-wrap gap-2">
                             {design.sizes.map((size) => (
-                              <span 
+                              <span
                                 key={size}
                                 className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
                               >
@@ -285,7 +202,7 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
               <CardContent>
                 <div className="space-y-3">
                   {resources.map((resource, index) => (
-                    <div 
+                    <div
                       key={index}
                       className="flex items-center justify-between p-4 bg-white border rounded-lg hover:shadow-md transition-shadow"
                     >
