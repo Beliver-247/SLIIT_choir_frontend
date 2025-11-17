@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Music } from "lucide-react";
+import { api } from "../utils/api";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -24,30 +25,18 @@ export function LoginModal({ isOpen, onClose, onLogin, onSwitchToRegister }: Log
     setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          studentId: studentId.toUpperCase(), 
-          password 
-        }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Login failed");
+      const result = await api.auth.login(studentId.toUpperCase(), password);
+      
+      if (!result.success) {
+        throw new Error(result.error || "Login failed");
       }
 
-      const data = await response.json();
-      
       // Store token and member data
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("member", JSON.stringify(data.member));
+      localStorage.setItem("authToken", result.data.token);
+      localStorage.setItem("member", JSON.stringify(result.data.member));
 
       // Extract name from member object
-      const displayName = `${data.member.firstName} ${data.member.lastName}`;
+      const displayName = `${result.data.member.firstName} ${result.data.member.lastName}`;
       onLogin(displayName);
       
       setStudentId("");

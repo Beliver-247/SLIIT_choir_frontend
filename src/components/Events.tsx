@@ -25,11 +25,36 @@ export function Events() {
       try {
         setIsLoading(true);
         setError(null);
-        const data = await api.events.getAll({ status: 'upcoming' });
-        setEvents(data.data || []);
+        
+        // Try without status filter first to debug
+        const result = await api.events.getAll();
+        
+        console.log('[Events] API Response:', result);
+        
+        if (!result.success) {
+          console.error('[Events] API returned success: false', result.error);
+          setError(result.error || 'Failed to load events');
+          setEvents([]);
+          return;
+        }
+
+        // The API returns the events array directly in the response
+        const eventsData = result.data || [];
+        console.log('[Events] Events data:', eventsData);
+        console.log('[Events] Is array?', Array.isArray(eventsData));
+        console.log('[Events] Events count:', eventsData.length);
+        
+        // Filter for upcoming events on the frontend if needed
+        const upcomingEvents = Array.isArray(eventsData) 
+          ? eventsData.filter(e => e.status === 'upcoming' || !e.status)
+          : [];
+        
+        console.log('[Events] Filtered upcoming events:', upcomingEvents.length);
+        setEvents(upcomingEvents);
       } catch (err) {
         console.error('Failed to fetch events:', err);
         setError('Failed to load events');
+        setEvents([]);
       } finally {
         setIsLoading(false);
       }

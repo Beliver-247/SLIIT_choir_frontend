@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Music } from "lucide-react";
+import { api } from "../utils/api";
 
 interface RegistrationModalProps {
   isOpen: boolean;
@@ -67,33 +68,25 @@ export function RegistrationModal({
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          studentId: formData.studentId.toUpperCase(),
-          email: formData.email,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-        }),
+      const result = await api.auth.register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        studentId: formData.studentId.toUpperCase(),
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
+      if (!result.success) {
+        throw new Error(result.error || "Registration failed");
       }
 
       // Store token and member data
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("member", JSON.stringify(data.member));
+      localStorage.setItem("authToken", result.data.token);
+      localStorage.setItem("member", JSON.stringify(result.data.member));
 
       // Extract name from member object
-      const displayName = `${data.member.firstName} ${data.member.lastName}`;
+      const displayName = `${result.data.member.firstName} ${result.data.member.lastName}`;
       setSuccess("Registration successful! Welcome to SLIIT Choir!");
       
       setTimeout(() => {

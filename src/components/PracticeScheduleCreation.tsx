@@ -115,7 +115,7 @@ export default function PracticeScheduleCreation({ onScheduleCreated }: Practice
           onScheduleCreated?.();
         }, 1500);
       } else {
-        setError(response.message || 'Failed to create practice schedule');
+        setError(response.error || 'Failed to create practice schedule');
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred while creating the practice schedule');

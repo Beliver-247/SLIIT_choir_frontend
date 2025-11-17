@@ -11,6 +11,7 @@ import {
   SelectValue 
 } from "./ui/select";
 import { AlertCircle, CheckCircle, Loader } from "lucide-react";
+import { api } from "../utils/api";
 
 interface EventCreationProps {
   onEventCreated: () => void;
@@ -101,32 +102,19 @@ export function EventCreation({ onEventCreated, onCancel }: EventCreationProps) 
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        throw new Error('Authentication token not found. Please log in again.');
-      }
-
-      const response = await fetch('http://localhost:5000/api/events', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          title: formData.title.trim(),
-          description: formData.description.trim(),
-          date: formData.date,
-          time: formData.time,
-          location: formData.location.trim(),
-          eventType: formData.eventType,
-          capacity: formData.capacity,
-          image: formData.image.trim() || null
-        })
+      const result = await api.events.create({
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        date: formData.date,
+        time: formData.time,
+        location: formData.location.trim(),
+        eventType: formData.eventType,
+        capacity: formData.capacity,
+        image: formData.image.trim() || null
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to create event');
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to create event');
       }
 
       setSuccess(true);

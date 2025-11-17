@@ -76,11 +76,35 @@ export default function PracticeSchedules({
       try {
         setIsLoading(true);
         setError(null);
-        const data = await api.schedules.getAll({ status: 'upcoming' });
-        setSchedules(data.data || []);
+        
+        // Fetch all schedules without status filter, then filter on frontend
+        const result = await api.schedules.getAll();
+        
+        console.log('[PracticeSchedules] API Response:', result);
+        
+        if (!result.success) {
+          console.error('[PracticeSchedules] API returned success: false', result.error);
+          setError(result.error || 'Failed to load practice schedules');
+          setSchedules([]);
+          return;
+        }
+
+        // The API returns the schedules array directly in the response
+        const schedulesData = result.data || [];
+        console.log('[PracticeSchedules] Schedules data:', schedulesData);
+        console.log('[PracticeSchedules] Is array?', Array.isArray(schedulesData));
+        
+        // Filter for upcoming schedules on the frontend
+        const upcomingSchedules = Array.isArray(schedulesData)
+          ? schedulesData.filter(s => s.status === 'upcoming' || !s.status)
+          : [];
+        
+        console.log('[PracticeSchedules] Filtered upcoming schedules:', upcomingSchedules.length);
+        setSchedules(upcomingSchedules);
       } catch (err: any) {
         console.error('Failed to fetch schedules:', err);
         setError('Failed to load practice schedules');
+        setSchedules([]);
       } finally {
         setIsLoading(false);
       }

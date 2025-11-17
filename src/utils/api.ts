@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://sliit-choir-backend.onrender.com/api';
 
 export const api = {
   getAuthToken: () => localStorage.getItem('authToken'),
@@ -14,22 +14,57 @@ export const api = {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers,
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        ...options,
+        headers,
+      });
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        // Token expired or invalid, clear storage and redirect to login
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('member');
-        window.location.href = '/';
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Token expired or invalid, clear storage and redirect to login
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('member');
+          window.location.href = '/';
+        }
+        return {
+          success: false,
+          error: responseData.message || `API Error: ${response.statusText}`,
+          status: response.status,
+        };
       }
-      throw new Error(`API Error: ${response.statusText}`);
-    }
 
-    return response.json();
+      // Handle two response formats:
+      // Format 1: { success: true, data: [...] } (used by GET endpoints)
+      // Format 2: { message, token, member } (used by auth endpoints)
+      
+      if (responseData.hasOwnProperty('data')) {
+        // Format 1: Already has { success, data } structure
+        return {
+          success: true,
+          data: responseData.data,
+          message: responseData.message,
+          status: response.status,
+        };
+      } else {
+        // Format 2: Direct response like { token, member, message }
+        return {
+          success: true,
+          data: responseData,
+          message: responseData.message,
+          status: response.status,
+        };
+      }
+    } catch (error) {
+      console.error('API Request Error:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Network error',
+        status: 0,
+      };
+    }
   },
 
   // Auth endpoints
