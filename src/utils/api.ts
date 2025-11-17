@@ -34,17 +34,24 @@ export const api = {
 
   // Auth endpoints
   auth: {
-    register(data: { firstName: string; lastName: string; email: string; password: string }) {
+    register(data: { 
+      firstName: string; 
+      lastName: string; 
+      studentId: string;
+      email: string; 
+      password: string;
+      confirmPassword: string;
+    }) {
       return api.request('/auth/register', {
         method: 'POST',
         body: JSON.stringify(data),
       });
     },
 
-    login(email: string, password: string) {
+    login(studentId: string, password: string) {
       return api.request('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ studentId, password }),
       });
     },
 
