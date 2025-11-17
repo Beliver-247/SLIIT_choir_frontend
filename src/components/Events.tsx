@@ -1,35 +1,56 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Calendar, MapPin, Clock } from "lucide-react";
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { api } from "../utils/api";
+
+interface Event {
+  _id: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  image?: string;
+  description?: string;
+}
 
 export function Events() {
-  const upcomingEvents = [
-    {
-      title: "University Foundation Day Performance",
-      date: "December 15, 2025",
-      time: "6:00 PM",
-      location: "SLIIT Main Auditorium",
-      image: "https://images.unsplash.com/photo-1762158007643-666f303d91d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwc3R1ZGVudHMlMjBzaW5naW5nfGVufDF8fHx8MTc2MzM1MTEwNHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      description: "Join us as we celebrate SLIIT's foundation with a special musical performance."
-    },
-    {
-      title: "Annual Christmas Carol Service",
-      date: "December 20, 2025",
-      time: "7:00 PM",
-      location: "Cathedral of Christ the Living Saviour",
-      image: "https://images.unsplash.com/photo-1667933579786-6753a3dc4bd9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaHJpc3RtYXMlMjBjYXJvbCUyMHNlcnZpY2V8ZW58MXx8fHwxNzYzMzUxMTA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      description: "Our biggest event of the year – a beautiful carol service for charity. All proceeds go to support underprivileged children."
-    },
-    {
-      title: "Inter-University Music Festival",
-      date: "January 25, 2026",
-      time: "5:00 PM",
-      location: "Nelum Pokuna Theatre",
-      image: "https://images.unsplash.com/photo-1660248771425-76ee4182c257?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtdXNpY2FsJTIwY29uY2VydCUyMGF1ZGllbmNlfGVufDF8fHx8MTc2MzM1MTEwNXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      description: "Representing SLIIT at the prestigious inter-university music competition."
-    }
-  ];
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await api.events.getAll({ status: 'upcoming' });
+        setEvents(data.data || []);
+      } catch (err) {
+        console.error('Failed to fetch events:', err);
+        setError('Failed to load events');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const formatTime = (timeString: string) => {
+    if (!timeString) return 'Time TBA';
+    return timeString;
+  };
 
   return (
     <section id="events" className="py-20 bg-white">
@@ -42,37 +63,66 @@ export function Events() {
           </p>
         </div>
 
+        {isLoading && (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+              <p className="text-gray-600">Loading events...</p>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
+            <p className="text-red-700">{error}</p>
+          </div>
+        )}
+
+        {!isLoading && events.length === 0 && !error && (
+          <div className="text-center py-12">
+            <p className="text-gray-600">No upcoming events at the moment. Please check back later!</p>
+          </div>
+        )}
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {upcomingEvents.map((event, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="relative h-48">
-                <ImageWithFallback
-                  src={event.image}
-                  alt={event.title}
-                  className="w-full h-full object-cover"
-                />
+          {events.map((event) => (
+            <Card key={event._id} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <div className="relative h-48 bg-gray-200">
+                {event.image ? (
+                  <ImageWithFallback
+                    src={event.image}
+                    alt={event.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                    <span className="text-gray-500">No image available</span>
+                  </div>
+                )}
               </div>
               <CardContent className="p-6">
-                <h3 className="text-blue-900 mb-3">{event.title}</h3>
-                <p className="text-gray-600 mb-4">{event.description}</p>
+                <h3 className="text-blue-900 mb-3 line-clamp-2">{event.title}</h3>
+                <p className="text-gray-600 mb-4 line-clamp-2">{event.description || 'Event details coming soon...'}</p>
                 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-gray-600">
-                    <Calendar className="h-4 w-4" />
-                    <span>{event.date}</span>
+                    <Calendar className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm">{formatDate(event.date)}</span>
                   </div>
+                  {event.time && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Clock className="h-4 w-4 flex-shrink-0" />
+                      <span className="text-sm">{formatTime(event.time)}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 text-gray-600">
-                    <Clock className="h-4 w-4" />
-                    <span>{event.time}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <MapPin className="h-4 w-4" />
-                    <span>{event.location}</span>
+                    <MapPin className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm line-clamp-1">{event.location}</span>
                   </div>
                 </div>
 
                 <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  Learn More
+                  Register
                 </Button>
               </CardContent>
             </Card>

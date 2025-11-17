@@ -10,11 +10,13 @@ import { MembersPortal } from "./components/MembersPortal";
 import { LoginModal } from "./components/LoginModal";
 import { RegistrationModal } from "./components/RegistrationModal";
 import AuthSuccess from "./components/AuthSuccess";
+import { EventCreation } from "./components/EventCreation";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<"home" | "members" | "auth-success">(() => {
+  const [currentPage, setCurrentPage] = useState<"home" | "members" | "auth-success" | "create-event">(() => {
     if (window.location.pathname === "/members") return "members";
     if (window.location.pathname === "/auth-success") return "auth-success";
+    if (window.location.pathname === "/create-event") return "create-event";
     return "home";
   });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -43,6 +45,7 @@ export default function App() {
     const syncPageWithPath = () => {
       if (window.location.pathname === "/members") setCurrentPage("members");
       else if (window.location.pathname === "/auth-success") setCurrentPage("auth-success");
+      else if (window.location.pathname === "/create-event") setCurrentPage("create-event");
       else setCurrentPage("home");
     };
     window.addEventListener("popstate", syncPageWithPath);
@@ -95,6 +98,10 @@ export default function App() {
         onLoginClick={handleLoginClick}
         onLogout={handleLogout}
         onHomeClick={navigateToHome}
+        onCreateEventClick={() => {
+          setCurrentPage("create-event");
+          window.history.pushState({}, "", "/create-event");
+        }}
         isLoggedIn={isLoggedIn}
         memberName={memberName}
         currentPage={currentPage}
@@ -102,6 +109,17 @@ export default function App() {
       
       {currentPage === "auth-success" ? (
         <AuthSuccess />
+      ) : currentPage === "create-event" ? (
+        <EventCreation 
+          onEventCreated={() => {
+            setCurrentPage("members");
+            window.history.pushState({}, "", "/members");
+          }}
+          onCancel={() => {
+            setCurrentPage("members");
+            window.history.pushState({}, "", "/members");
+          }}
+        />
       ) : currentPage === "home" ? (
         <>
           <Hero />
