@@ -1,25 +1,29 @@
-import { Music, Menu, LogOut, User } from "lucide-react";
+import { Music, Menu, LogOut, User, Plus } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import { canCreateEvents } from "../utils/roleUtils";
 
 interface NavigationProps {
   onLoginClick: () => void;
   onLogout: () => void;
   onHomeClick: () => void;
+  onCreateEventClick: () => void;
   isLoggedIn: boolean;
   memberName: string;
-  currentPage: "home" | "members" | "auth-success";
+  currentPage: "home" | "members" | "auth-success" | "create-event";
 }
 
 export function Navigation({ 
   onLoginClick, 
   onLogout, 
-  onHomeClick, 
+  onHomeClick,
+  onCreateEventClick,
   isLoggedIn, 
   memberName,
   currentPage 
 }: NavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const canCreate = isLoggedIn && canCreateEvents();
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
@@ -68,6 +72,15 @@ export function Navigation({
                     className="gap-2"
                   >
                     Member Portal
+                  </Button>
+                )}
+                {canCreate && currentPage === "members" && (
+                  <Button
+                    onClick={onCreateEventClick}
+                    className="bg-green-600 hover:bg-green-700 gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Create Event
                   </Button>
                 )}
                 <div className="flex items-center gap-2 text-gray-700">
@@ -131,6 +144,15 @@ export function Navigation({
                     className="w-full gap-2 mb-2"
                   >
                     Member Portal
+                  </Button>
+                )}
+                {canCreate && currentPage === "members" && (
+                  <Button
+                    onClick={onCreateEventClick}
+                    className="w-full bg-green-600 hover:bg-green-700 gap-2 mb-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Create Event
                   </Button>
                 )}
                 <div className="flex items-center gap-2 text-gray-700 py-2">
