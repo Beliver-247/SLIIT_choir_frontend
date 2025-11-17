@@ -69,3 +69,10 @@ export const isAdmin = (): boolean => {
 export const isModerator = (): boolean => {
   return hasRole('moderator');
 };
+
+/**
+ * Check if the current user can create practice schedules (admin or moderator)
+ */
+export const canCreateSchedules = (): boolean => {
+  return hasRole(['admin', 'moderator']);
+};

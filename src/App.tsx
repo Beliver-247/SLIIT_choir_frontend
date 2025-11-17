@@ -11,9 +11,10 @@ import { LoginModal } from "./components/LoginModal";
 import { RegistrationModal } from "./components/RegistrationModal";
 import AuthSuccess from "./components/AuthSuccess";
 import { EventCreation } from "./components/EventCreation";
+import PracticeScheduleCreation from "./components/PracticeScheduleCreation";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<"home" | "members" | "auth-success" | "create-event">(() => {
+  const [currentPage, setCurrentPage] = useState<"home" | "members" | "auth-success" | "create-event" | "create-schedule">(() => {
     if (window.location.pathname === "/members") return "members";
     if (window.location.pathname === "/auth-success") return "auth-success";
     if (window.location.pathname === "/create-event") return "create-event";
@@ -46,6 +47,7 @@ export default function App() {
       if (window.location.pathname === "/members") setCurrentPage("members");
       else if (window.location.pathname === "/auth-success") setCurrentPage("auth-success");
       else if (window.location.pathname === "/create-event") setCurrentPage("create-event");
+      else if (window.location.pathname === "/create-schedule") setCurrentPage("create-schedule");
       else setCurrentPage("home");
     };
     window.addEventListener("popstate", syncPageWithPath);
@@ -102,6 +104,10 @@ export default function App() {
           setCurrentPage("create-event");
           window.history.pushState({}, "", "/create-event");
         }}
+        onCreateScheduleClick={() => {
+          setCurrentPage("create-schedule");
+          window.history.pushState({}, "", "/create-schedule");
+        }}
         isLoggedIn={isLoggedIn}
         memberName={memberName}
         currentPage={currentPage}
@@ -116,6 +122,13 @@ export default function App() {
             window.history.pushState({}, "", "/members");
           }}
           onCancel={() => {
+            setCurrentPage("members");
+            window.history.pushState({}, "", "/members");
+          }}
+        />
+      ) : currentPage === "create-schedule" ? (
+        <PracticeScheduleCreation
+          onScheduleCreated={() => {
             setCurrentPage("members");
             window.history.pushState({}, "", "/members");
           }}

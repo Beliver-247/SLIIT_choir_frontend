@@ -1,16 +1,17 @@
 import { Music, Menu, LogOut, User, Plus } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
-import { canCreateEvents } from "../utils/roleUtils";
+import { canCreateEvents, canCreateSchedules } from "../utils/roleUtils";
 
 interface NavigationProps {
   onLoginClick: () => void;
   onLogout: () => void;
   onHomeClick: () => void;
   onCreateEventClick: () => void;
+  onCreateScheduleClick: () => void;
   isLoggedIn: boolean;
   memberName: string;
-  currentPage: "home" | "members" | "auth-success" | "create-event";
+  currentPage: "home" | "members" | "auth-success" | "create-event" | "create-schedule";
 }
 
 export function Navigation({ 
@@ -18,12 +19,14 @@ export function Navigation({
   onLogout, 
   onHomeClick,
   onCreateEventClick,
+  onCreateScheduleClick,
   isLoggedIn, 
   memberName,
   currentPage 
 }: NavigationProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const canCreate = isLoggedIn && canCreateEvents();
+  const canCreateSched = isLoggedIn && canCreateSchedules();
 
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
@@ -81,6 +84,15 @@ export function Navigation({
                   >
                     <Plus className="h-4 w-4" />
                     Create Event
+                  </Button>
+                )}
+                {canCreateSched && currentPage === "members" && (
+                  <Button
+                    onClick={onCreateScheduleClick}
+                    className="bg-purple-600 hover:bg-purple-700 gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Create Schedule
                   </Button>
                 )}
                 <div className="flex items-center gap-2 text-gray-700">
@@ -153,6 +165,15 @@ export function Navigation({
                   >
                     <Plus className="h-4 w-4" />
                     Create Event
+                  </Button>
+                )}
+                {canCreateSched && currentPage === "members" && (
+                  <Button
+                    onClick={onCreateScheduleClick}
+                    className="w-full bg-purple-600 hover:bg-purple-700 gap-2 mb-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Create Schedule
                   </Button>
                 )}
                 <div className="flex items-center gap-2 text-gray-700 py-2">
