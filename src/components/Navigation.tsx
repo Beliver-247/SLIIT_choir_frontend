@@ -8,7 +8,7 @@ interface NavigationProps {
   onHomeClick: () => void;
   isLoggedIn: boolean;
   memberName: string;
-  currentPage: "home" | "members";
+  currentPage: "home" | "members" | "auth-success";
 }
 
 export function Navigation({ 
@@ -58,6 +58,18 @@ export function Navigation({
             
             {isLoggedIn ? (
               <div className="flex items-center gap-3">
+                {currentPage !== "members" && (
+                  <Button
+                    onClick={() => {
+                      window.history.pushState({}, "", "/members");
+                      window.dispatchEvent(new PopStateEvent("popstate"));
+                    }}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    Member Portal
+                  </Button>
+                )}
                 <div className="flex items-center gap-2 text-gray-700">
                   <User className="h-4 w-4" />
                   <span>{memberName}</span>
@@ -109,6 +121,18 @@ export function Navigation({
             
             {isLoggedIn ? (
               <>
+                {currentPage !== "members" && (
+                  <Button
+                    onClick={() => {
+                      window.history.pushState({}, "", "/members");
+                      window.dispatchEvent(new PopStateEvent("popstate"));
+                    }}
+                    variant="outline"
+                    className="w-full gap-2 mb-2"
+                  >
+                    Member Portal
+                  </Button>
+                )}
                 <div className="flex items-center gap-2 text-gray-700 py-2">
                   <User className="h-4 w-4" />
                   <span>{memberName}</span>
