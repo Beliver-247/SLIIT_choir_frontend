@@ -125,8 +125,8 @@ export default function PracticeScheduleCreation({ onScheduleCreated }: Practice
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 p-4 md:p-8">
-      <div className="max-w-2xl mx-auto">
+<div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 pt-24 pb-12">
+  <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <Card className="shadow-lg">
           <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-t-lg">
             <CardTitle className="flex items-center gap-2">
