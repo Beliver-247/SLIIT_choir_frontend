@@ -111,7 +111,6 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
             <TabsTrigger value="merchandise">Merchandise</TabsTrigger>
             <TabsTrigger value="resources">Resources</TabsTrigger>
-            <TabsTrigger value="attendance">Attendance</TabsTrigger>
           </TabsList>
 
           {/* Practice Schedule Tab */}
