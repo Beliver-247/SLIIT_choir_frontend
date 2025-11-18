@@ -136,9 +136,9 @@ const ScheduleAttendanceModal: React.FC<ScheduleAttendanceModalProps> = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <AlertDialogTitle>Take Attendance - {scheduleTitle}</AlertDialogTitle>
-        <AlertDialogDescription>Mark attendance for members in this practice schedule</AlertDialogDescription>
+      <AlertDialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white border border-gray-300 shadow-lg z-50">
+        <AlertDialogTitle className="text-2xl font-bold text-gray-900">Take Attendance - {scheduleTitle}</AlertDialogTitle>
+        <AlertDialogDescription className="text-gray-700">Mark attendance for members in this practice schedule</AlertDialogDescription>
 
         <div className="py-4 space-y-4">
           {saveMessage && (
