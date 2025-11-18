@@ -101,19 +101,9 @@ export function Navigation({
                 )}
                 {canCreate && currentPage === "members" && (
                   <Button
-                    onClick={onAttendanceClick}
-                    className="bg-blue-600 hover:bg-blue-700 gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Take Attendance
-                  </Button>
-                )}
-                {canCreate && currentPage === "members" && (
-                  <Button
                     onClick={onAnalyticsClick}
                     className="bg-indigo-600 hover:bg-indigo-700 gap-2"
                   >
-                    <Plus className="h-4 w-4" />
                     Attendance Analytics
                   </Button>
                 )}
