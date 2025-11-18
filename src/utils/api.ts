@@ -1,4 +1,5 @@
-const API_BASE_URL = 'https://sliit-choir-backend.onrender.com/api';
+//const API_BASE_URL = 'https://sliit-choir-backend.onrender.com/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 export const api = {
   getAuthToken: () => localStorage.getItem('authToken'),
@@ -234,6 +235,61 @@ export const api = {
 
     getAttendance(id: string) {
       return api.request(`/schedules/${id}/attendance`);
+    },
+  },
+
+  // Attendance endpoints
+  attendance: {
+    markAttendance(data: {
+      memberId: string;
+      eventId?: string;
+      scheduleId?: string;
+      status: 'present' | 'absent' | 'excused' | 'late';
+      comments?: string;
+    }) {
+      return api.request('/attendance/mark', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    getAll(filters?: Record<string, any>) {
+      const params = new URLSearchParams(filters);
+      return api.request(`/attendance/list?${params}`);
+    },
+
+    getEventAttendance(eventId: string) {
+      return api.request(`/attendance/event/${eventId}`);
+    },
+
+    getScheduleAttendance(scheduleId: string) {
+      return api.request(`/attendance/schedule/${scheduleId}`);
+    },
+
+    updateAttendance(id: string, data: { status?: string; comments?: string }) {
+      return api.request(`/attendance/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
+    deleteAttendance(id: string) {
+      return api.request(`/attendance/${id}`, { method: 'DELETE' });
+    },
+
+    exportToExcel(filters?: Record<string, any>) {
+      const params = new URLSearchParams(filters);
+      return `${API_BASE_URL}/attendance/export/excel?${params}&token=${api.getAuthToken()}`;
+    },
+
+    getAnalytics(filters?: Record<string, any>) {
+      const params = new URLSearchParams(filters);
+      return api.request(`/attendance/analytics?${params}`);
+    },
+
+    getMemberHistory(memberId: string, filters?: Record<string, any>) {
+      const params = new URLSearchParams(filters);
+      return api.request(`/attendance/member/${memberId}?${params}`);
     },
   },
 };

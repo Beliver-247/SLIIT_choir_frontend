@@ -1,16 +1,40 @@
-import { Calendar, ShoppingBag, Download, Music } from "lucide-react";
+import { Calendar, ShoppingBag, Download, Music, Clipboard, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import PracticeSchedules from "./PracticeSchedules";
+import { getCurrentMember, hasRole } from "../utils/roleUtils";
+import ScheduleAttendanceModal from "./ScheduleAttendanceModal";
+import { useState } from "react";
+
+interface PracticeSchedule {
+  _id: string;
+  title: string;
+  description?: string;
+  date: string;
+  timePeriod: {
+    startTime: string;
+    endTime: string;
+  };
+  location: {
+    lectureHallId: string;
+  };
+  status: string;
+  createdBy: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+}
 
 interface MembersPortalProps {
   memberName: string;
 }
 
 export function MembersPortal({ memberName }: MembersPortalProps) {
+  const [selectedScheduleForAttendance, setSelectedScheduleForAttendance] = useState<PracticeSchedule | null>(null);
   const tshirtDesigns = [
     {
       id: 1,
@@ -83,10 +107,11 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
         </div>
 
         <Tabs defaultValue="schedule" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-md grid-cols-4">
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
             <TabsTrigger value="merchandise">Merchandise</TabsTrigger>
             <TabsTrigger value="resources">Resources</TabsTrigger>
+            <TabsTrigger value="attendance">Attendance</TabsTrigger>
           </TabsList>
 
           {/* Practice Schedule Tab */}
@@ -100,7 +125,13 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
               </CardHeader>
               <CardContent>
                 {/* Real data from backend */}
-                <PracticeSchedules />
+                <PracticeSchedules 
+                  onScheduleSelect={(schedule) => {
+                    if (hasRole(['moderator', 'admin'])) {
+                      setSelectedScheduleForAttendance(schedule);
+                    }
+                  }}
+                />
 
                 {/* Attendance Policy */}
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg">
@@ -265,7 +296,86 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Attendance Tab */}
+          <TabsContent value="attendance" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clipboard className="h-5 w-5 text-blue-600" />
+                  Attendance Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {hasRole(['moderator', 'admin']) ? (
+                  <div className="space-y-3">
+                    <Button 
+                      onClick={() => {
+                        window.history.pushState({}, "", "/attendance");
+                        window.dispatchEvent(new PopStateEvent("popstate"));
+                      }}
+                      className="w-full bg-blue-600 hover:bg-blue-700 gap-2"
+                    >
+                      <Clipboard className="h-4 w-4" />
+                      Take Attendance
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        window.history.pushState({}, "", "/attendance-analytics");
+                        window.dispatchEvent(new PopStateEvent("popstate"));
+                      }}
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 gap-2"
+                    >
+                      <BarChart3 className="h-4 w-4" />
+                      View Analytics
+                    </Button>
+                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 mt-4">
+                      <p className="text-sm text-blue-900">
+                        As a moderator/admin, you can mark attendance for members and view comprehensive analytics including attendance rates, trends, and export data to Excel.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <p className="text-blue-900 font-medium mb-3">Your Attendance</p>
+                      <p className="text-sm text-blue-700 mb-4">
+                        View your personal attendance record and statistics across all events and practice sessions.
+                      </p>
+                      <Button 
+                        onClick={() => {
+                          const member = getCurrentMember();
+                          if (member) {
+                            window.history.pushState({}, "", `/member-report/${member._id}`);
+                            window.dispatchEvent(new PopStateEvent("popstate"));
+                          }
+                        }}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                      >
+                        View My Attendance
+                      </Button>
+                    </div>
+                    <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                      <p className="text-amber-900 text-sm">
+                        📊 Attendance analytics and management features are available only for moderators and administrators.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
+
+        {/* Attendance Modal */}
+        {selectedScheduleForAttendance && (
+          <ScheduleAttendanceModal
+            isOpen={!!selectedScheduleForAttendance}
+            scheduleId={selectedScheduleForAttendance._id}
+            scheduleTitle={selectedScheduleForAttendance.title}
+            onClose={() => setSelectedScheduleForAttendance(null)}
+          />
+        )}
       </div>
     </div>
   );

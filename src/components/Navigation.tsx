@@ -9,9 +9,11 @@ interface NavigationProps {
   onHomeClick: () => void;
   onCreateEventClick: () => void;
   onCreateScheduleClick: () => void;
+  onAttendanceClick: () => void;
+  onAnalyticsClick: () => void;
   isLoggedIn: boolean;
   memberName: string;
-  currentPage: "home" | "members" | "auth-success" | "create-event" | "create-schedule";
+  currentPage: "home" | "members" | "auth-success" | "create-event" | "create-schedule" | "attendance" | "attendance-analytics" | "member-report";
 }
 
 export function Navigation({ 
@@ -20,6 +22,8 @@ export function Navigation({
   onHomeClick,
   onCreateEventClick,
   onCreateScheduleClick,
+  onAttendanceClick,
+  onAnalyticsClick,
   isLoggedIn, 
   memberName,
   currentPage 
@@ -93,6 +97,24 @@ export function Navigation({
                   >
                     <Plus className="h-4 w-4" />
                     Create Schedule
+                  </Button>
+                )}
+                {canCreate && currentPage === "members" && (
+                  <Button
+                    onClick={onAttendanceClick}
+                    className="bg-blue-600 hover:bg-blue-700 gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Take Attendance
+                  </Button>
+                )}
+                {canCreate && currentPage === "members" && (
+                  <Button
+                    onClick={onAnalyticsClick}
+                    className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Attendance Analytics
                   </Button>
                 )}
                 <div className="flex items-center gap-2 text-gray-700">
@@ -174,6 +196,24 @@ export function Navigation({
                   >
                     <Plus className="h-4 w-4" />
                     Create Schedule
+                  </Button>
+                )}
+                {canCreate && currentPage === "members" && (
+                  <Button
+                    onClick={onAttendanceClick}
+                    className="w-full bg-blue-600 hover:bg-blue-700 gap-2 mb-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Take Attendance
+                  </Button>
+                )}
+                {canCreate && currentPage === "members" && (
+                  <Button
+                    onClick={onAnalyticsClick}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 gap-2 mb-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Attendance Analytics
                   </Button>
                 )}
                 <div className="flex items-center gap-2 text-gray-700 py-2">
