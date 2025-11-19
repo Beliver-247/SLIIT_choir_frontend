@@ -149,9 +149,9 @@ export function Events() {
                 </div>
 
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                {/* <Button className="w-full bg-blue-600 hover:bg-blue-700">
                   Register
-                </Button>
+                </Button> */}
                 </motion.div>
               </CardContent>
             </Card>
