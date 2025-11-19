@@ -1,5 +1,5 @@
-const API_BASE_URL = 'https://sliit-choir-backend.onrender.com/api';
-//const API_BASE_URL = 'http://localhost:5000/api';
+//const API_BASE_URL = 'https://sliit-choir-backend.onrender.com/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 export const api = {
   getAuthToken: () => localStorage.getItem('authToken'),
@@ -415,6 +415,140 @@ export const api = {
 
     getStats() {
       return api.request('/orders/stats/summary');
+    },
+  },
+
+  // Resources endpoints
+  resources: {
+    getAll(filters?: Record<string, any>) {
+      const params = new URLSearchParams(filters);
+      return api.request(`/resources?${params}`);
+    },
+
+    getById(id: string) {
+      return api.request(`/resources/${id}`);
+    },
+
+    getBySong() {
+      return api.request('/resources/by-song');
+    },
+
+    create(formData: FormData) {
+      const token = api.getAuthToken();
+      const headers: Record<string, string> = {};
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      return fetch(`${API_BASE_URL}/resources`, {
+        method: 'POST',
+        headers,
+        body: formData,
+      }).then(async (response) => {
+        const responseData = await response.json();
+        if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('member');
+            window.location.href = '/';
+          }
+          return { success: false, error: responseData.message, status: response.status };
+        }
+        return { success: true, data: responseData.data, message: responseData.message, status: response.status };
+      }).catch((error) => {
+        return { success: false, error: error instanceof Error ? error.message : 'Network error', status: 0 };
+      });
+    },
+
+    update(id: string, data: Record<string, any>) {
+      return api.request(`/resources/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
+    delete(id: string) {
+      return api.request(`/resources/${id}`, { method: 'DELETE' });
+    },
+  },
+
+  // Resource Requests endpoints
+  resourceRequests: {
+    create(formData: FormData) {
+      const token = api.getAuthToken();
+      const headers: Record<string, string> = {};
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      return fetch(`${API_BASE_URL}/resource-requests`, {
+        method: 'POST',
+        headers,
+        body: formData,
+      }).then(async (response) => {
+        const responseData = await response.json();
+        if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('member');
+            window.location.href = '/';
+          }
+          return { success: false, error: responseData.message, status: response.status };
+        }
+        return { success: true, data: responseData.data, message: responseData.message, status: response.status };
+      }).catch((error) => {
+        return { success: false, error: error instanceof Error ? error.message : 'Network error', status: 0 };
+      });
+    },
+
+    getAll(filters?: Record<string, any>) {
+      const params = new URLSearchParams(filters);
+      return api.request(`/resource-requests?${params}`);
+    },
+
+    getMyRequests() {
+      return api.request('/resource-requests/my-requests');
+    },
+
+    approve(id: string) {
+      return api.request(`/resource-requests/${id}/approve`, {
+        method: 'PUT',
+      });
+    },
+
+    reject(id: string, reason: string) {
+      return api.request(`/resource-requests/${id}/reject`, {
+        method: 'PUT',
+        body: JSON.stringify({ reason }),
+      });
+    },
+
+    delete(id: string) {
+      return api.request(`/resource-requests/${id}`, { method: 'DELETE' });
+    },
+  },
+
+  // Favorites endpoints
+  favorites: {
+    getAll() {
+      return api.request('/favorites');
+    },
+
+    add(resourceId: string) {
+      return api.request('/favorites', {
+        method: 'POST',
+        body: JSON.stringify({ resourceId }),
+      });
+    },
+
+    remove(resourceId: string) {
+      return api.request(`/favorites/${resourceId}`, { method: 'DELETE' });
+    },
+
+    check(resourceId: string) {
+      return api.request(`/favorites/check/${resourceId}`);
     },
   },
 };

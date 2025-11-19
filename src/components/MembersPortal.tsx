@@ -1,4 +1,4 @@
-import { Calendar, Download, Music, Clipboard, BarChart3 } from "lucide-react";
+import { Calendar, Music, Clipboard, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
@@ -10,6 +10,8 @@ import MerchandiseManagement from "./MerchandiseManagement";
 import OrderCheckout from "./OrderCheckout";
 import MyOrders from "./MyOrders";
 import OrderManagement from "./OrderManagement";
+import ResourceManagement from "./ResourceManagement";
+import ResourceBrowser from "./ResourceBrowser";
 import { useState } from "react";
 
 interface PracticeSchedule {
@@ -43,33 +45,6 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
   const [checkoutCart, setCheckoutCart] = useState<any[]>([]);
   const [showCheckout, setShowCheckout] = useState(false);
   const isAdmin = hasRole(['admin', 'moderator']);
-
-  const resources = [
-    {
-      title: "Sheet Music - Christmas Carols 2025",
-      type: "PDF",
-      size: "2.4 MB",
-      updated: "Nov 10, 2025",
-    },
-    {
-      title: "Vocal Warm-up Exercises",
-      type: "PDF",
-      size: "890 KB",
-      updated: "Oct 15, 2025",
-    },
-    {
-      title: "Performance Guidelines",
-      type: "PDF",
-      size: "1.2 MB",
-      updated: "Sep 20, 2025",
-    },
-    {
-      title: "Choir Member Handbook 2025",
-      type: "PDF",
-      size: "3.1 MB",
-      updated: "Aug 1, 2025",
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-12">
@@ -173,78 +148,7 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
 
           {/* Resources Tab */}
           <TabsContent value="resources" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Download className="h-5 w-5 text-blue-600" />
-                  Member Resources
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {resources.map((resource, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-4 bg-white border rounded-lg hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <Download className="h-6 w-6 text-blue-600" />
-                        </div>
-                        <div>
-                          <div className="text-blue-900 mb-1">{resource.title}</div>
-                          <div className="text-sm text-gray-600">
-                            {resource.type} • {resource.size} • Updated {resource.updated}
-                          </div>
-                        </div>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 grid md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
-                    <h3 className="text-blue-900 mb-2">Quick Links</h3>
-                    <ul className="space-y-2 text-sm">
-                      <li>
-                        <a href="#" className="text-blue-600 hover:text-blue-700">
-                          Member Directory
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#" className="text-blue-600 hover:text-blue-700">
-                          Attendance Records
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#" className="text-blue-600 hover:text-blue-700">
-                          Payment History
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#" className="text-blue-600 hover:text-blue-700">
-                          Contact Coordinator
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
-                    <h3 className="text-purple-900 mb-2">Upcoming Events</h3>
-                    <ul className="space-y-2 text-sm text-purple-700">
-                      <li>• Foundation Day - Dec 15</li>
-                      <li>• Carol Service - Dec 20</li>
-                      <li>• Inter-Uni Festival - Jan 25</li>
-                      <li>• Team Building - Feb 10</li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            {isAdmin ? <ResourceManagement /> : <ResourceBrowser />}
           </TabsContent>
 
           {/* Attendance Tab */}
