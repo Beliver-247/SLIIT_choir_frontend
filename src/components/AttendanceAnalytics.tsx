@@ -76,14 +76,18 @@ const AttendanceAnalytics: React.FC = () => {
 
   const handleExportExcel = async () => {
     try {
+      setLoading(true);
       const filters: Record<string, string> = {};
       if (startDate) filters.startDate = startDate;
       if (endDate) filters.endDate = endDate;
 
-      const exportUrl = api.attendance.exportToExcel(filters);
-      window.open(exportUrl, '_blank');
+      await api.attendance.exportToExcel(filters);
+      // Success - file will be downloaded automatically
     } catch (err) {
       setError('Failed to export attendance');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 

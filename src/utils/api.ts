@@ -277,9 +277,49 @@ export const api = {
       return api.request(`/attendance/${id}`, { method: 'DELETE' });
     },
 
-    exportToExcel(filters?: Record<string, any>) {
+    async exportToExcel(filters?: Record<string, any>) {
       const params = new URLSearchParams(filters);
-      return `${API_BASE_URL}/attendance/export/excel?${params}&token=${api.getAuthToken()}`;
+      const token = api.getAuthToken();
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/attendance/export/excel?${params}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('member');
+            window.location.href = '/';
+          }
+          throw new Error('Failed to export attendance');
+        }
+
+        // Get the blob from response
+        const blob = await response.blob();
+        
+        // Create a download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `attendance-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        return { success: true };
+      } catch (error) {
+        console.error('Export error:', error);
+        throw error;
+      }
     },
 
     getAnalytics(filters?: Record<string, any>) {
