@@ -432,7 +432,7 @@ export default function OrderManagement() {
                     <div className="flex gap-2 pt-2">
                       <Button
                         onClick={() => handleConfirmOrder(order._id)}
-                        className="flex-1 bg-green-600 hover:bg-green-700"
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                         disabled={actionLoading}
                       >
                         <CheckCircle className="h-4 w-4 mr-2" />
@@ -440,8 +440,7 @@ export default function OrderManagement() {
                       </Button>
                       <Button
                         onClick={() => setSelectedOrder(order)}
-                        variant="destructive"
-                        className="flex-1"
+                        className="flex-1 bg-red-600 hover:bg-red-700 text-white"
                         disabled={actionLoading}
                       >
                         <XCircle className="h-4 w-4 mr-2" />
@@ -525,7 +524,7 @@ export default function OrderManagement() {
                   <div className="flex gap-2">
                     <Button
                       onClick={() => handleConfirmOrder(selectedOrder._id)}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                       disabled={actionLoading}
                     >
                       <CheckCircle className="h-4 w-4 mr-2" />
@@ -533,8 +532,7 @@ export default function OrderManagement() {
                     </Button>
                     <Button
                       onClick={() => handleDeclineOrder(selectedOrder._id)}
-                      variant="destructive"
-                      className="flex-1"
+                      className="flex-1 bg-red-600 hover:bg-red-700 text-white"
                       disabled={actionLoading || !declineReason.trim()}
                     >
                       <XCircle className="h-4 w-4 mr-2" />
