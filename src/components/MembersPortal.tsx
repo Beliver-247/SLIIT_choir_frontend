@@ -166,16 +166,6 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
                   <div className="space-y-3">
                     <Button 
                       onClick={() => {
-                        window.history.pushState({}, "", "/attendance");
-                        window.dispatchEvent(new PopStateEvent("popstate"));
-                      }}
-                      className="w-full bg-blue-600 hover:bg-blue-700 gap-2"
-                    >
-                      <Clipboard className="h-4 w-4" />
-                      Take Attendance
-                    </Button>
-                    <Button 
-                      onClick={() => {
                         window.history.pushState({}, "", "/attendance-analytics");
                         window.dispatchEvent(new PopStateEvent("popstate"));
                       }}
