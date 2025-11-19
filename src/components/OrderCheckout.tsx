@@ -90,17 +90,17 @@ export default function OrderCheckout({ cart, onSuccess, onCancel }: OrderChecko
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <CardHeader>
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white shadow-2xl">
+        <CardHeader className="bg-white">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl">Checkout</CardTitle>
+            <CardTitle className="text-2xl text-gray-900">Checkout</CardTitle>
             <Button variant="ghost" size="sm" onClick={onCancel}>
               <X className="h-5 w-5" />
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="bg-white">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Order Summary */}
             <div className="space-y-3">
