@@ -1,10 +1,16 @@
 import { Button } from "./ui/button";
 import { Music2, Heart } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { motion } from "framer-motion";
 
 export function Hero() {
   return (
-    <div className="relative pt-16 min-h-screen flex items-center">
+    <motion.div
+      className="relative pt-16 min-h-screen flex items-center"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+    >
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <ImageWithFallback
@@ -17,47 +23,51 @@ export function Hero() {
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="max-w-3xl">
+        <motion.div className="max-w-3xl" initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45 }}>
           <div className="flex items-center gap-2 mb-6">
             <Music2 className="h-8 w-8 text-blue-300" />
             <span className="text-blue-200">SLIIT Official Choir</span>
           </div>
           
-          <h1 className="text-white mb-6">
+          <motion.h1 className="text-white mb-6" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.05 }}>
             Voices United in Harmony & Service
-          </h1>
+          </motion.h1>
           
-          <p className="text-blue-100 text-xl mb-8 max-w-2xl">
+          <motion.p className="text-blue-100 text-xl mb-8 max-w-2xl" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.15 }}>
             We are the official choir of SLIIT, bringing music to life while making a difference 
             through our performances and charitable initiatives.
-          </p>
+          </motion.p>
 
           <div className="flex flex-wrap gap-4">
-            <Button size="lg" className="bg-white text-blue-900 hover:bg-blue-50">
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+              <Button size="lg" className="bg-white text-blue-900 hover:bg-blue-50">
               <Heart className="mr-2 h-5 w-5" />
               Support Our Cause
-            </Button>
-            <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
               Learn More
-            </Button>
+              </Button>
+            </motion.div>
           </div>
 
-          <div className="grid grid-cols-3 gap-8 mt-12 pt-12 border-t border-blue-300/30">
-            <div>
+          <motion.div className="grid grid-cols-3 gap-8 mt-12 pt-12 border-t border-blue-300/30" initial="hidden" whileInView="show" viewport={{ once: true }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 }}}}>
+            <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 }}}>
               <div className="text-white text-3xl mb-2">500+</div>
               <div className="text-blue-200">Performances</div>
-            </div>
-            <div>
+            </motion.div>
+            <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 }}}>
               <div className="text-white text-3xl mb-2">50+</div>
               <div className="text-blue-200">Events Annually</div>
-            </div>
-            <div>
+            </motion.div>
+            <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 }}}>
               <div className="text-white text-3xl mb-2">10+</div>
               <div className="text-blue-200">Years of Service</div>
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
