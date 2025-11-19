@@ -1,6 +1,7 @@
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Heart, HandHeart, Gift, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function Donation() {
   const donationTiers = [
@@ -31,7 +32,7 @@ export function Donation() {
   return (
     <section id="donate" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4 }}>
           <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-900 px-4 py-2 rounded-full mb-4">
             <Sparkles className="h-4 w-4" />
             <span>Make a Difference</span>
@@ -41,12 +42,12 @@ export function Donation() {
             Your generous donations help us continue our musical journey and support 
             communities in need. Every contribution makes a real difference.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
+        <motion.div className="grid md:grid-cols-3 gap-8 mb-12" initial="hidden" whileInView="show" viewport={{ once: true }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 }}}}>
           {donationTiers.map((tier, index) => (
+            <motion.div key={index} variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 }}}>
             <Card 
-              key={index} 
               className={`relative ${tier.popular ? 'border-2 border-blue-600 shadow-lg' : ''}`}
             >
               {tier.popular && (
@@ -73,17 +74,20 @@ export function Donation() {
                   ))}
                 </div>
 
-                <Button 
-                  className={`w-full ${tier.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-900 hover:bg-blue-800'}`}
-                >
-                  Donate {tier.amount}
-                </Button>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    className={`w-full ${tier.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-900 hover:bg-blue-800'}`}
+                  >
+                    Donate {tier.amount}
+                  </Button>
+                </motion.div>
               </CardContent>
             </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="bg-blue-900 text-white rounded-2xl p-8 md:p-12">
+        <motion.div className="bg-blue-900 text-white rounded-2xl p-8 md:p-12" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45 }}>
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <h3 className="text-white mb-4">Custom Donation</h3>
@@ -91,9 +95,11 @@ export function Donation() {
                 Want to contribute a different amount? Every donation, big or small, 
                 helps us continue our mission of spreading joy through music and supporting those in need.
               </p>
-              <Button size="lg" className="bg-white text-blue-900 hover:bg-blue-50">
-                Make a Custom Donation
-              </Button>
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                <Button size="lg" className="bg-white text-blue-900 hover:bg-blue-50">
+                  Make a Custom Donation
+                </Button>
+              </motion.div>
             </div>
             
             <div className="bg-blue-800 rounded-lg p-6">
@@ -129,7 +135,7 @@ export function Donation() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -4,6 +4,7 @@ import { Calendar, MapPin, Clock } from "lucide-react";
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { api } from "../utils/api";
+import { motion } from "framer-motion";
 
 interface Event {
   _id: string;
@@ -80,13 +81,13 @@ export function Events() {
   return (
     <section id="events" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4 }}>
           <h2 className="text-blue-900 mb-4">Upcoming Events</h2>
           <p className="text-gray-600 text-xl max-w-3xl mx-auto">
             Join us at our performances and events throughout the year. 
             Every event is an opportunity to experience beautiful music and support worthy causes.
           </p>
-        </div>
+        </motion.div>
 
         {isLoading && (
           <div className="flex justify-center items-center py-12">
@@ -109,9 +110,10 @@ export function Events() {
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8" initial="hidden" whileInView="show" viewport={{ once: true }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 }}}}>
           {events.map((event) => (
-            <Card key={event._id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <motion.div key={event._id} variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 }}}>
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="relative h-48 bg-gray-200">
                 {event.image ? (
                   <ImageWithFallback
@@ -146,13 +148,16 @@ export function Events() {
                   </div>
                 </div>
 
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button className="w-full bg-blue-600 hover:bg-blue-700">
                   Register
                 </Button>
+                </motion.div>
               </CardContent>
             </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

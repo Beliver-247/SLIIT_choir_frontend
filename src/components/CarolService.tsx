@@ -1,6 +1,7 @@
 import { Button } from "./ui/button";
 import { Calendar, Heart, Music, Users } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { motion } from "framer-motion";
 
 export function CarolService() {
   return (
@@ -17,7 +18,7 @@ export function CarolService() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div>
+          <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.45 }}>
             <div className="inline-block bg-blue-700 px-4 py-2 rounded-full mb-6">
               <span className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
@@ -77,16 +78,20 @@ export function CarolService() {
             </div>
 
             <div className="flex flex-wrap gap-4">
-              <Button size="lg" className="bg-white text-blue-900 hover:bg-blue-50">
-                Get Tickets
-              </Button>
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
-                Learn More
-              </Button>
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                <Button size="lg" className="bg-white text-blue-900 hover:bg-blue-50">
+                  Get Tickets
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
+                  Learn More
+                </Button>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="relative">
+          <motion.div className="relative" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
             <div className="relative rounded-lg overflow-hidden shadow-2xl">
               <ImageWithFallback
                 src="https://images.unsplash.com/photo-1667933579786-6753a3dc4bd9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjaHJpc3RtYXMlMjBjYXJvbCUyMHNlcnZpY2V8ZW58MXx8fHwxNzYzMzUxMTA0fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
@@ -113,7 +118,7 @@ export function CarolService() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
