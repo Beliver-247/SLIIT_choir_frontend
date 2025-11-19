@@ -292,4 +292,129 @@ export const api = {
       return api.request(`/attendance/member/${memberId}?${params}`);
     },
   },
+
+  // Merchandise endpoints
+  merchandise: {
+    getAll(filters?: Record<string, any>) {
+      const params = new URLSearchParams(filters);
+      return api.request(`/merchandise?${params}`);
+    },
+
+    getById(id: string) {
+      return api.request(`/merchandise/${id}`);
+    },
+
+    create(data: Record<string, any>) {
+      return api.request('/merchandise', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    update(id: string, data: Record<string, any>) {
+      return api.request(`/merchandise/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+    },
+
+    delete(id: string) {
+      return api.request(`/merchandise/${id}`, { method: 'DELETE' });
+    },
+  },
+
+  // Orders endpoints
+  orders: {
+    create(data: {
+      items: Array<{
+        merchandiseId: string;
+        size: string;
+        quantity: number;
+      }>;
+      receipt: string;
+    }) {
+      return api.request('/orders', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    createWithFile(formData: FormData) {
+      const token = api.getAuthToken();
+      const headers: Record<string, string> = {};
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      return fetch(`${API_BASE_URL}/orders`, {
+        method: 'POST',
+        headers,
+        body: formData,
+      }).then(async (response) => {
+        const responseData = await response.json();
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('member');
+            window.location.href = '/';
+          }
+          return {
+            success: false,
+            error: responseData.message || `API Error: ${response.statusText}`,
+            status: response.status,
+          };
+        }
+
+        return {
+          success: true,
+          data: responseData.data || responseData,
+          message: responseData.message,
+          status: response.status,
+        };
+      }).catch((error) => {
+        console.error('API Request Error:', error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Network error',
+          status: 0,
+        };
+      });
+    },
+
+    getAll(filters?: Record<string, any>) {
+      const params = new URLSearchParams(filters);
+      return api.request(`/orders?${params}`);
+    },
+
+    getById(id: string) {
+      return api.request(`/orders/${id}`);
+    },
+
+    getMyOrders() {
+      return api.request('/orders/my-orders');
+    },
+
+    confirm(id: string) {
+      return api.request(`/orders/${id}/confirm`, {
+        method: 'PUT',
+      });
+    },
+
+    decline(id: string, reason: string) {
+      return api.request(`/orders/${id}/decline`, {
+        method: 'PUT',
+        body: JSON.stringify({ reason }),
+      });
+    },
+
+    delete(id: string) {
+      return api.request(`/orders/${id}`, { method: 'DELETE' });
+    },
+
+    getStats() {
+      return api.request('/orders/stats/summary');
+    },
+  },
 };

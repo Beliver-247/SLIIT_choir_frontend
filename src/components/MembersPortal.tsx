@@ -7,6 +7,11 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import PracticeSchedules from "./PracticeSchedules";
 import { getCurrentMember, hasRole } from "../utils/roleUtils";
 import ScheduleAttendanceModal from "./ScheduleAttendanceModal";
+import MerchandiseCatalog from "./MerchandiseCatalog";
+import MerchandiseManagement from "./MerchandiseManagement";
+import OrderCheckout from "./OrderCheckout";
+import MyOrders from "./MyOrders";
+import OrderManagement from "./OrderManagement";
 import { useState } from "react";
 
 interface PracticeSchedule {
@@ -35,38 +40,11 @@ interface MembersPortalProps {
 
 export function MembersPortal({ memberName }: MembersPortalProps) {
   const [selectedScheduleForAttendance, setSelectedScheduleForAttendance] = useState<PracticeSchedule | null>(null);
-  const tshirtDesigns = [
-    {
-      id: 1,
-      name: "Official Choir T-Shirt 2025",
-      description: "Navy blue with gold SLIIT Choir logo",
-      price: "LKR 1,500",
-      image:
-        "https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0LXNoaXJ0JTIwbW9ja3VwfGVufDF8fHx8MTc2MzMzNTQxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-      available: true,
-    },
-    {
-      id: 2,
-      name: "Performance Polo Shirt",
-      description: "White polo with embroidered logo",
-      price: "LKR 2,200",
-      image:
-        "https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0LXNoaXJ0JTIwbW9ja3VwfGVufDF8fHx8MTc2MzMzNTQxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      sizes: ["S", "M", "L", "XL", "XXL"],
-      available: true,
-    },
-    {
-      id: 3,
-      name: "Carol Service Special Edition",
-      description: "Limited edition black with festive design",
-      price: "LKR 1,800",
-      image:
-        "https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0LXNoaXJ0JTIwbW9ja3VwfGVufDF8fHx8MTc2MzMzNTQxMnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-      sizes: ["XS", "S", "M", "L", "XL"],
-      available: true,
-    },
-  ];
+  const [showMerchandiseManagement, setShowMerchandiseManagement] = useState(false);
+  const [showOrderManagement, setShowOrderManagement] = useState(false);
+  const [checkoutCart, setCheckoutCart] = useState<any[]>([]);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const isAdmin = hasRole(['admin', 'moderator']);
 
   const resources = [
     {
@@ -151,74 +129,49 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
 
           {/* Merchandise Tab */}
           <TabsContent value="merchandise" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ShoppingBag className="h-5 w-5 text-blue-600" />
-                  Official Merchandise
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {tshirtDesigns.map((design) => (
-                    <div
-                      key={design.id}
-                      className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-                    >
-                      <div className="aspect-square bg-gray-100 relative">
-                        <ImageWithFallback
-                          src={design.image}
-                          alt={design.name}
-                          className="w-full h-full object-cover"
-                        />
-                        {design.available && (
-                          <Badge className="absolute top-3 right-3 bg-green-500">
-                            Available
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <h3 className="text-blue-900 mb-2">{design.name}</h3>
-                        <p className="text-sm text-gray-600 mb-3">{design.description}</p>
-
-                        <div className="mb-3">
-                          <div className="text-sm text-gray-600 mb-2">Available Sizes:</div>
-                          <div className="flex flex-wrap gap-2">
-                            {design.sizes.map((size) => (
-                              <span
-                                key={size}
-                                className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
-                              >
-                                {size}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="text-blue-900">{design.price}</span>
-                        </div>
-
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                          Order Now
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                  <div className="text-blue-900 mb-2">Order Information</div>
-                  <ul className="text-sm text-blue-700 space-y-1 list-disc list-inside">
-                    <li>Orders will be processed within 2-3 weeks</li>
-                    <li>Pick up from the choir coordinator during practice</li>
-                    <li>Payment can be made via bank transfer or cash</li>
-                    <li>Contact choir@sliit.lk for bulk orders</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
+            {showMerchandiseManagement ? (
+              <MerchandiseManagement onBack={() => setShowMerchandiseManagement(false)} />
+            ) : showOrderManagement ? (
+              <div className="space-y-4">
+                <Button variant="outline" onClick={() => setShowOrderManagement(false)}>
+                  Back to Merchandise
+                </Button>
+                <OrderManagement />
+              </div>
+            ) : (
+              <>
+                {isAdmin && (
+                  <div className="flex gap-2 justify-end">
+                    <Button onClick={() => setShowOrderManagement(true)} variant="outline">
+                      Manage Orders
+                    </Button>
+                  </div>
+                )}
+                <MerchandiseCatalog 
+                  onOrderNow={(cart) => {
+                    setCheckoutCart(cart);
+                    setShowCheckout(true);
+                  }}
+                  onManageClick={() => setShowMerchandiseManagement(true)}
+                />
+                <MyOrders />
+              </>
+            )}
           </TabsContent>
+
+          {/* Checkout Modal */}
+          {showCheckout && checkoutCart.length > 0 && (
+            <OrderCheckout
+              cart={checkoutCart}
+              onSuccess={() => {
+                setShowCheckout(false);
+                setCheckoutCart([]);
+              }}
+              onCancel={() => {
+                setShowCheckout(false);
+              }}
+            />
+          )}
 
           {/* Resources Tab */}
           <TabsContent value="resources" className="space-y-6">
