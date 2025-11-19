@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Music, Search, Heart, Download, ExternalLink, Play, Pause, Volume2 } from 'lucide-react';
+import { Music, Search, Heart, Download, ExternalLink, Play, Pause, Volume2, Upload, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { api } from '../utils/api';
 
@@ -34,10 +36,24 @@ export default function ResourceBrowser() {
   const [searchQuery, setSearchQuery] = useState('');
   const [resourceTypeFilter, setResourceTypeFilter] = useState('all');
   const [expandedSongs, setExpandedSongs] = useState<Set<string>>(new Set());
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showMyRequestsModal, setShowMyRequestsModal] = useState(false);
+  const [myRequests, setMyRequests] = useState<any[]>([]);
+  const [actionLoading, setActionLoading] = useState(false);
   
   // Audio player state
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [playingResourceId, setPlayingResourceId] = useState<string | null>(null);
+
+  // Upload form state
+  const [uploadFormData, setUploadFormData] = useState({
+    songTitle: '',
+    description: '',
+    resourceType: 'sheet_music',
+    visibility: 'all_members',
+    fileUrl: '',
+  });
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchResources();
@@ -114,6 +130,112 @@ export default function ResourceBrowser() {
       }
       return newExpanded;
     });
+  };
+
+  const fetchMyRequests = async () => {
+    try {
+      const response = await api.resourceRequests.getMyRequests();
+      if (response.success && response.data) {
+        setMyRequests(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch my requests:', error);
+    }
+  };
+
+  const handleUploadFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      
+      // Validate file type based on resource type
+      if (uploadFormData.resourceType === 'sheet_music') {
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+        if (!allowedTypes.includes(selectedFile.type)) {
+          alert('Sheet music must be PDF or image (JPEG, PNG)');
+          return;
+        }
+      } else if (uploadFormData.resourceType.startsWith('audio_')) {
+        const allowedTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav'];
+        if (!allowedTypes.includes(selectedFile.type)) {
+          alert('Audio files must be MP3 or WAV');
+          return;
+        }
+      }
+      
+      // Check file size (20MB limit)
+      if (selectedFile.size > 20 * 1024 * 1024) {
+        alert('File size must be less than 20MB');
+        return;
+      }
+      
+      setUploadFile(selectedFile);
+    }
+  };
+
+  const handleUploadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!uploadFormData.songTitle || !uploadFormData.description || !uploadFormData.resourceType) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    // Validate based on resource type
+    if (['google_drive_link', 'youtube_link'].includes(uploadFormData.resourceType)) {
+      if (!uploadFormData.fileUrl) {
+        alert('Please provide a URL');
+        return;
+      }
+    } else {
+      if (!uploadFile) {
+        alert('Please select a file to upload');
+        return;
+      }
+    }
+
+    try {
+      setActionLoading(true);
+      const submitFormData = new FormData();
+      submitFormData.append('songTitle', uploadFormData.songTitle);
+      submitFormData.append('description', uploadFormData.description);
+      submitFormData.append('resourceType', uploadFormData.resourceType);
+      submitFormData.append('visibility', uploadFormData.visibility);
+      
+      if (uploadFormData.fileUrl) {
+        submitFormData.append('fileUrl', uploadFormData.fileUrl);
+      }
+      
+      if (uploadFile) {
+        submitFormData.append('file', uploadFile);
+      }
+
+      const response = await api.resourceRequests.create(submitFormData);
+      
+      if (response.success) {
+        alert('Resource submitted for approval! Moderators will review it soon.');
+        setShowUploadModal(false);
+        resetUploadForm();
+        fetchMyRequests();
+      } else {
+        alert('Failed to submit resource: ' + response.error);
+      }
+    } catch (error) {
+      alert('Failed to submit resource');
+      console.error('Submit resource error:', error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const resetUploadForm = () => {
+    setUploadFormData({
+      songTitle: '',
+      description: '',
+      resourceType: 'sheet_music',
+      visibility: 'all_members',
+      fileUrl: '',
+    });
+    setUploadFile(null);
   };
 
   const playAudio = (resource: Resource) => {
@@ -274,10 +396,28 @@ export default function ResourceBrowser() {
       {/* Header */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Music className="h-5 w-5 text-blue-600" />
-            Resource Library
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Music className="h-5 w-5 text-blue-600" />
+              Resource Library
+            </CardTitle>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  fetchMyRequests();
+                  setShowMyRequestsModal(true);
+                }}
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                My Requests
+              </Button>
+              <Button onClick={() => setShowUploadModal(true)} className="bg-blue-600 hover:bg-blue-700">
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Resource
+              </Button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Search and Filters */}
@@ -387,6 +527,186 @@ export default function ResourceBrowser() {
                 )}
               </Card>
             ))}
+        </div>
+      )}
+
+      {/* Upload Resource Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white shadow-2xl">
+            <CardHeader className="bg-white">
+              <CardTitle className="text-gray-900">Upload Resource for Approval</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 bg-white">
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 mb-4">
+                <p className="text-sm text-blue-900">
+                  Your resource will be reviewed by moderators before being published to the library.
+                </p>
+              </div>
+              <form onSubmit={handleUploadSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="songTitle">Song Title *</Label>
+                  <Input
+                    id="songTitle"
+                    value={uploadFormData.songTitle}
+                    onChange={(e) => setUploadFormData({ ...uploadFormData, songTitle: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Description *</Label>
+                  <Textarea
+                    id="description"
+                    value={uploadFormData.description}
+                    onChange={(e) => setUploadFormData({ ...uploadFormData, description: e.target.value })}
+                    rows={3}
+                    required
+                    placeholder="Describe this resource..."
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="resourceType">Resource Type *</Label>
+                  <Select value={uploadFormData.resourceType} onValueChange={(value) => setUploadFormData({ ...uploadFormData, resourceType: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sheet_music">Sheet Music</SelectItem>
+                      <SelectItem value="audio_soprano">Audio - Soprano</SelectItem>
+                      <SelectItem value="audio_alto">Audio - Alto</SelectItem>
+                      <SelectItem value="audio_tenor">Audio - Tenor</SelectItem>
+                      <SelectItem value="audio_bass">Audio - Bass</SelectItem>
+                      <SelectItem value="google_drive_link">Google Drive Link</SelectItem>
+                      <SelectItem value="youtube_link">YouTube Link</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="visibility">Visibility *</Label>
+                  <Select value={uploadFormData.visibility} onValueChange={(value) => setUploadFormData({ ...uploadFormData, visibility: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all_members">All Members</SelectItem>
+                      <SelectItem value="admin_moderator_only">Admin/Moderator Only</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {['google_drive_link', 'youtube_link'].includes(uploadFormData.resourceType) ? (
+                  <div>
+                    <Label htmlFor="fileUrl">URL *</Label>
+                    <Input
+                      id="fileUrl"
+                      type="url"
+                      value={uploadFormData.fileUrl}
+                      onChange={(e) => setUploadFormData({ ...uploadFormData, fileUrl: e.target.value })}
+                      placeholder="https://..."
+                      required
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <Label htmlFor="file">
+                      {uploadFormData.resourceType === 'sheet_music' ? 'Upload Sheet Music (PDF/Image) *' : 'Upload Audio File (MP3/WAV) *'}
+                    </Label>
+                    <Input
+                      id="file"
+                      type="file"
+                      onChange={handleUploadFileChange}
+                      accept={uploadFormData.resourceType === 'sheet_music' ? '.pdf,image/*' : 'audio/*'}
+                      required
+                    />
+                    {uploadFile && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        Selected: {uploadFile.name} ({formatFileSize(uploadFile.size)})
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-4">
+                  <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700" disabled={actionLoading}>
+                    <Upload className="h-4 w-4 mr-2" />
+                    {actionLoading ? 'Submitting...' : 'Submit for Approval'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => {
+                      setShowUploadModal(false);
+                      resetUploadForm();
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* My Requests Modal */}
+      {showMyRequestsModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white shadow-2xl">
+            <CardHeader className="bg-white">
+              <CardTitle className="text-gray-900">My Resource Requests</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 bg-white">
+              {myRequests.length === 0 ? (
+                <div className="text-center py-8 text-gray-600">
+                  You haven't submitted any resources yet.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {myRequests.map((request) => (
+                    <div key={request._id} className="border rounded-lg p-4 space-y-2">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-blue-900">{request.songTitle}</h3>
+                          <p className="text-sm text-gray-600 mt-1">{request.description}</p>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            <Badge className="bg-blue-100 text-blue-800">
+                              {getResourceTypeLabel(request.resourceType)}
+                            </Badge>
+                            <Badge className={
+                              request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                              request.status === 'approved' ? 'bg-green-100 text-green-800' :
+                              'bg-red-100 text-red-800'
+                            }>
+                              {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-2">
+                            Submitted {new Date(request.createdAt).toLocaleDateString()}
+                          </p>
+                          {request.status === 'rejected' && request.rejectionReason && (
+                            <div className="mt-2 p-2 bg-red-50 rounded border border-red-200">
+                              <p className="text-sm text-red-900">
+                                <strong>Rejection reason:</strong> {request.rejectionReason}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex justify-end pt-4">
+                <Button onClick={() => setShowMyRequestsModal(false)} variant="outline">
+                  Close
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
