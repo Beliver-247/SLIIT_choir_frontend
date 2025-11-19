@@ -1,9 +1,7 @@
-import { Calendar, ShoppingBag, Download, Music, Clipboard, BarChart3 } from "lucide-react";
+import { Calendar, Download, Music, Clipboard, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
 import PracticeSchedules from "./PracticeSchedules";
 import { getCurrentMember, hasRole } from "../utils/roleUtils";
 import ScheduleAttendanceModal from "./ScheduleAttendanceModal";
