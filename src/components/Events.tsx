@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Calendar, MapPin, Clock } from "lucide-react";
-import { Button } from "./ui/button";
+// import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { api } from "../utils/api";
 import { motion } from "framer-motion";
