@@ -94,6 +94,13 @@ export const api = {
     getProfile() {
       return api.request('/auth/profile');
     },
+
+    verifyEmail(data: { studentId: string; otp: string }) {
+      return api.request('/auth/verify-email', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
   },
 
   // Members endpoints

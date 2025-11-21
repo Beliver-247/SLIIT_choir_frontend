@@ -15,16 +15,21 @@ import PracticeScheduleCreation from "./components/PracticeScheduleCreation";
 import AttendanceTaking from "./components/AttendanceTaking";
 import AttendanceAnalytics from "./components/AttendanceAnalytics";
 import MemberAttendanceReport from "./components/MemberAttendanceReport";
+import MyOrdersPage from "./components/MyOrdersPage";
+import MerchandiseItemPage from "./components/MerchandiseItemPage";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<"home" | "members" | "auth-success" | "create-event" | "create-schedule" | "attendance" | "attendance-analytics" | "member-report">(() => {
-    if (window.location.pathname === "/members") return "members";
-    if (window.location.pathname === "/auth-success") return "auth-success";
-    if (window.location.pathname === "/create-event") return "create-event";
-    if (window.location.pathname === "/create-schedule") return "create-schedule";
-    if (window.location.pathname === "/attendance") return "attendance";
-    if (window.location.pathname === "/attendance-analytics") return "attendance-analytics";
-    if (window.location.pathname.startsWith("/member-report/")) return "member-report";
+  const [currentPage, setCurrentPage] = useState<"home" | "members" | "auth-success" | "create-event" | "create-schedule" | "attendance" | "attendance-analytics" | "member-report" | "my-orders" | "merchandise-item">(() => {
+    const path = window.location.pathname;
+    if (path === "/members") return "members";
+    if (path === "/auth-success") return "auth-success";
+    if (path === "/create-event") return "create-event";
+    if (path === "/create-schedule") return "create-schedule";
+    if (path === "/attendance") return "attendance";
+    if (path === "/attendance-analytics") return "attendance-analytics";
+    if (path.startsWith("/member-report/")) return "member-report";
+    if (path === "/my-orders") return "my-orders";
+    if (path.startsWith("/merchandise/")) return "merchandise-item";
     return "home";
   });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -51,13 +56,16 @@ export default function App() {
   // Sync currentPage with URL path on popstate (browser navigation)
   useEffect(() => {
     const syncPageWithPath = () => {
-      if (window.location.pathname === "/members") setCurrentPage("members");
-      else if (window.location.pathname === "/auth-success") setCurrentPage("auth-success");
-      else if (window.location.pathname === "/create-event") setCurrentPage("create-event");
-      else if (window.location.pathname === "/create-schedule") setCurrentPage("create-schedule");
-      else if (window.location.pathname === "/attendance") setCurrentPage("attendance");
-      else if (window.location.pathname === "/attendance-analytics") setCurrentPage("attendance-analytics");
-      else if (window.location.pathname.startsWith("/member-report/")) setCurrentPage("member-report");
+      const path = window.location.pathname;
+      if (path === "/members") setCurrentPage("members");
+      else if (path === "/auth-success") setCurrentPage("auth-success");
+      else if (path === "/create-event") setCurrentPage("create-event");
+      else if (path === "/create-schedule") setCurrentPage("create-schedule");
+      else if (path === "/attendance") setCurrentPage("attendance");
+      else if (path === "/attendance-analytics") setCurrentPage("attendance-analytics");
+      else if (path.startsWith("/member-report/")) setCurrentPage("member-report");
+      else if (path === "/my-orders") setCurrentPage("my-orders");
+      else if (path.startsWith("/merchandise/")) setCurrentPage("merchandise-item");
       else setCurrentPage("home");
     };
     window.addEventListener("popstate", syncPageWithPath);
@@ -104,14 +112,14 @@ export default function App() {
     window.history.pushState({}, "", "/");
   };
 
-  const handleAttendanceClick = () => {
-    setCurrentPage("attendance");
-    window.history.pushState({}, "", "/attendance");
-  };
-
   const handleAnalyticsClick = () => {
     setCurrentPage("attendance-analytics");
     window.history.pushState({}, "", "/attendance-analytics");
+  };
+
+  const handleMyOrdersClick = () => {
+    setCurrentPage("my-orders");
+    window.history.pushState({}, "", "/my-orders");
   };
 
   return (
@@ -128,8 +136,8 @@ export default function App() {
           setCurrentPage("create-schedule");
           window.history.pushState({}, "", "/create-schedule");
         }}
-        onAttendanceClick={handleAttendanceClick}
         onAnalyticsClick={handleAnalyticsClick}
+        onMyOrdersClick={handleMyOrdersClick}
         isLoggedIn={isLoggedIn}
         memberName={memberName}
         currentPage={currentPage}
@@ -200,6 +208,21 @@ export default function App() {
           <Donation />
           <Footer />
         </>
+      ) : currentPage === "my-orders" ? (
+        <MyOrdersPage />
+      ) : currentPage === "merchandise-item" ? (
+        (() => {
+          const merchandiseId = window.location.pathname.split("/merchandise/")[1];
+          return merchandiseId ? (
+            <MerchandiseItemPage itemId={merchandiseId} />
+          ) : (
+            <div className="min-h-screen bg-gray-50 pt-24 pb-12">
+              <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <p className="text-gray-600">Invalid merchandise item</p>
+              </div>
+            </div>
+          );
+        })()
       ) : (
         <MembersPortal memberName={memberName} />
       )}

@@ -35,6 +35,13 @@ export default function MerchandiseCatalog({ onOrderNow, onManageClick }: Mercha
   const [loading, setLoading] = useState(true);
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const isAdmin = hasRole(['admin', 'moderator']);
+  const navigateToItem = (id: string) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('membersTab', 'merchandise');
+    }
+    window.history.pushState({}, '', `/merchandise/${id}`);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
 
   useEffect(() => {
     fetchMerchandise();
@@ -150,7 +157,34 @@ export default function MerchandiseCatalog({ onOrderNow, onManageClick }: Mercha
               No merchandise available at the moment
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <>
+            <div className="grid grid-cols-2 gap-4 md:hidden">
+              {merchandise.map((item) => (
+                <button
+                  type="button"
+                  key={`${item._id}-mobile`}
+                  onClick={() => navigateToItem(item._id)}
+                  className="text-left bg-white rounded-xl border hover:border-blue-400 transition-all p-2"
+                >
+                  <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                    <img
+                      src={item.image || 'https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400'}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = 'https://images.unsplash.com/photo-1618677603286-0ec56cb6e1b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400';
+                      }}
+                    />
+                  </div>
+                  <div className="mt-2 space-y-1">
+                    <p className="text-sm font-semibold text-blue-900 line-clamp-1">{item.name}</p>
+                    <p className="text-xs text-gray-500">{getCategoryLabel(item.category)}</p>
+                    <p className="text-sm font-bold text-blue-600">LKR {item.price.toLocaleString()}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {merchandise.map((item) => (
                 <div
                   key={item._id}
@@ -221,6 +255,7 @@ export default function MerchandiseCatalog({ onOrderNow, onManageClick }: Mercha
                 </div>
               ))}
             </div>
+            </>
           )}
 
           {/* Shopping Cart Summary */}
