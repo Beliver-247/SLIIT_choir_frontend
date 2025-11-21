@@ -256,3 +256,19 @@ src/components/Events.tsx
 ## Done! 🎉
 
 Your Events component now displays **real data from the API** instead of dummy data. Create some events and they'll automatically show up on the home page!
+
+## Vercel Deployment Notes
+
+- When deploying this Vite SPA to Vercel, add a `vercel.json` file at the project root with the following content:
+
+```json
+{
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "/" }
+  ]
+}
+```
+
+- This ensures client-side routes like `/members` or `/attendance-analytics` are rewritten back to `index.html` instead of returning a 404 on refresh.
+- Re-deploy after adding the file so the new routing rules take effect.
