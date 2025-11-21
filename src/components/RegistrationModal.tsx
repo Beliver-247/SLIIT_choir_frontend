@@ -76,12 +76,33 @@ export function RegistrationModal({
     }
   }, [isOpen]);
 
+  const setEmailFromStudentId = (rawStudentId: string) => {
+    const normalized = rawStudentId?.toUpperCase() || '';
+    const studentIdRegex = /^[A-Z]{2}\d{8}$/;
+    if (!normalized) return '';
+    if (!studentIdRegex.test(normalized)) {
+      return normalized.length >= 2 + 1 ? `${normalized.toLowerCase()}@my.sliit.lk` : '';
+    }
+    return `${normalized.toLowerCase()}@my.sliit.lk`;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      if (name === 'studentId') {
+        const studentIdValue = value.toUpperCase();
+        return {
+          ...prev,
+          studentId: studentIdValue,
+          email: setEmailFromStudentId(studentIdValue),
+        };
+      }
+
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
   };
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
@@ -261,10 +282,7 @@ export function RegistrationModal({
               type="text"
               placeholder="CS12345678"
               value={formData.studentId.toUpperCase()}
-              onChange={(e) => setFormData(prev => ({ 
-                ...prev, 
-                studentId: e.target.value 
-              }))}
+              onChange={handleChange}
               required
               disabled={isLoading}
               maxLength={10}
