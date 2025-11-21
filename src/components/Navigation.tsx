@@ -47,67 +47,93 @@ export function Navigation({
               </div>
             </button>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            {currentPage === "home" ? (
-              <>
-                <a href="#about" className="text-gray-700 hover:text-blue-600 transition-colors">
-                  About
-                </a>
-                <a href="#events" className="text-gray-700 hover:text-blue-600 transition-colors">
-                  Events
-                </a>
-                <a href="#carol-service" className="text-gray-700 hover:text-blue-600 transition-colors">
-                  Carol Service
-                </a>
-                <a href="#donate" className="text-gray-700 hover:text-blue-600 transition-colors">
-                  Donate
-                </a>
-              </>
-            ) : (
-              <button onClick={onHomeClick} className="text-gray-700 hover:text-blue-600 transition-colors">
-                Home
-              </button>
-            )}
-            
-            {isLoggedIn ? (
-              <div className="flex items-center gap-3">
-                {currentPage !== "members" && (
-                  <Button
-                    onClick={() => {
-                      window.history.pushState({}, "", "/members");
-                      window.dispatchEvent(new PopStateEvent("popstate"));
-                    }}
-                    variant="outline"
-                    className="gap-2"
-                  >
-                    Member Portal
-                  </Button>
-                )}
-                {canCreate && currentPage === "members" && (
-                  <Button
-                    onClick={onCreateEventClick}
-                    className="bg-green-600 hover:bg-green-700 gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Create Event
-                  </Button>
-                )}
-                {canCreateSched && currentPage === "members" && (
-                  <Button
-                    onClick={onCreateScheduleClick}
-                    className="bg-purple-600 hover:bg-purple-700 gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Create Schedule
-                  </Button>
-                )}
-                {canCreate && currentPage === "members" && (
-                  <Button
-                    onClick={onAnalyticsClick}
-                    className="bg-indigo-600 hover:bg-indigo-700 gap-2"
-                  >
-                    Attendance Analytics
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-6">
+              {currentPage === "home" ? (
+                <>
+                  <a href="#about" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
+                    <Sparkles className="h-4 w-4 text-blue-500" />
+                    About
+                  </a>
+                  <a href="#events" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
+                    <CalendarPlus className="h-4 w-4 text-blue-500" />
+                    Events
+                  </a>
+                  <a href="#carol-service" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
+                    <Music className="h-4 w-4 text-blue-500" />
+                    Carol Service
+                  </a>
+                  <a href="#donate" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
+                    <Gift className="h-4 w-4 text-blue-500" />
+                    Donate
+                  </a>
+                </>
+              ) : (
+                <button onClick={onHomeClick} className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
+                  <Home className="h-4 w-4" />
+                  Home
+                </button>
+              )}
+
+              {isLoggedIn ? (
+                <div className="flex items-center gap-3">
+                  {currentPage !== "members" && (
+                    <Button
+                      onClick={() => {
+                        window.history.pushState({}, "", "/members");
+                        window.dispatchEvent(new PopStateEvent("popstate"));
+                      }}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <Home className="h-4 w-4" />
+                      Member Portal
+                    </Button>
+                  )}
+                  {isLoggedIn && currentPage !== "my-orders" && (
+                    <Button
+                      onClick={onMyOrdersClick}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <ShoppingBag className="h-4 w-4" />
+                      My Orders
+                    </Button>
+                  )}
+                  {canCreate && currentPage === "members" && (
+                    <Button
+                      onClick={onCreateEventClick}
+                      className="bg-green-600 hover:bg-green-700 gap-2"
+                    >
+                      <CalendarPlus className="h-4 w-4" />
+                      Create Event
+                    </Button>
+                  )}
+                  {canCreateSched && currentPage === "members" && (
+                    <Button
+                      onClick={onCreateScheduleClick}
+                      className="bg-purple-600 hover:bg-purple-700 gap-2"
+                    >
+                      <ClipboardList className="h-4 w-4" />
+                      Create Schedule
+                    </Button>
+                  )}
+                  {canCreate && currentPage === "members" && (
+                    <Button
+                      onClick={onAnalyticsClick}
+                      className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+                    >
+                      <BarChart3 className="h-4 w-4" />
+                      Attendance Analytics
+                    </Button>
+                  )}
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <User className="h-4 w-4" />
+                    <span>{memberName}</span>
+                  </div>
+                  <Button onClick={onLogout} variant="outline" className="gap-2">
+                    <LogOut className="h-4 w-4" />
+                    Logout
                   </Button>
                 </div>
               ) : (
