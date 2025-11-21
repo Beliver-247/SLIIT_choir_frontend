@@ -30,9 +30,27 @@ export function RegistrationModal({
   const [step, setStep] = useState<'form' | 'otp'>('form');
   const [pendingStudentId, setPendingStudentId] = useState('');
   const [otp, setOtp] = useState('');
+  const [requiresVerification, setRequiresVerification] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const completeAuthentication = (payload: any, overrideMessage?: string) => {
+    if (!payload?.member || !payload?.token) {
+      throw new Error('Invalid verification response. Please try again.');
+    }
+
+    localStorage.setItem('authToken', payload.token);
+    localStorage.setItem('member', JSON.stringify(payload.member));
+
+    const displayName = `${payload.member.firstName} ${payload.member.lastName}`;
+    setSuccess(overrideMessage || 'Email verified! Redirecting...');
+
+    setTimeout(() => {
+      onRegister(displayName);
+      onClose();
+    }, 1200);
+  };
 
   const resetState = () => {
     setFormData({
@@ -46,6 +64,7 @@ export function RegistrationModal({
     setOtp('');
     setPendingStudentId('');
     setStep('form');
+    setRequiresVerification(true);
     setError('');
     setSuccess('');
     setIsLoading(false);
@@ -112,9 +131,28 @@ export function RegistrationModal({
         throw new Error(result.error || result.data?.message || 'Registration failed');
       }
 
+      const shouldRequireVerification = result.data?.requiresVerification !== false;
+      setRequiresVerification(shouldRequireVerification);
       setPendingStudentId(normalizedStudentId);
-      setStep('otp');
-      setSuccess('We sent a 6-digit code to your SLIIT email. Enter it below to activate your account.');
+
+      if (shouldRequireVerification) {
+        setStep('otp');
+        setSuccess('We sent a 6-digit code to your SLIIT email. Enter it below to activate your account.');
+      } else {
+        const verificationResult = await api.auth.verifyEmail({
+          studentId: normalizedStudentId,
+          otp: '000000',
+        });
+
+        if (!verificationResult.success) {
+          throw new Error(verificationResult.error || verificationResult.data?.message || 'Verification failed');
+        }
+
+        completeAuthentication(
+          verificationResult.data,
+          'Registration successful! Email verification is temporarily disabled, logging you in...'
+        );
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
@@ -144,15 +182,7 @@ export function RegistrationModal({
         throw new Error(result.error || result.data?.message || 'Verification failed');
       }
 
-      localStorage.setItem('authToken', result.data.token);
-      localStorage.setItem('member', JSON.stringify(result.data.member));
-      const displayName = `${result.data.member.firstName} ${result.data.member.lastName}`;
-      setSuccess('Email verified! Redirecting...');
-
-      setTimeout(() => {
-        onRegister(displayName);
-        onClose();
-      }, 1200);
+      completeAuthentication(result.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Verification failed');
     } finally {
@@ -320,7 +350,11 @@ export function RegistrationModal({
                 disabled={isLoading}
                 required
               />
-              <p className="text-xs text-gray-500">We sent the code to {`${pendingStudentId.toLowerCase()}@my.sliit.lk`}</p>
+              <p className="text-xs text-gray-500">
+                {requiresVerification
+                  ? `We sent the code to ${pendingStudentId.toLowerCase()}@my.sliit.lk`
+                  : 'Email verification is currently disabled.'}
+              </p>
             </div>
 
             <Button
