@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -27,9 +27,35 @@ export function RegistrationModal({
     password: "",
     confirmPassword: "",
   });
+  const [step, setStep] = useState<'form' | 'otp'>('form');
+  const [pendingStudentId, setPendingStudentId] = useState('');
+  const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const resetState = () => {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      studentId: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
+    setOtp('');
+    setPendingStudentId('');
+    setStep('form');
+    setError('');
+    setSuccess('');
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    if (!isOpen) {
+      resetState();
+    }
+  }, [isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -39,30 +65,35 @@ export function RegistrationModal({
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
 
-    // Validate StudentID format
     const studentIdRegex = /^[A-Z]{2}\d{8}$/;
-    if (!studentIdRegex.test(formData.studentId.toUpperCase())) {
-      setError("StudentID must be 2 letters followed by 8 digits (e.g., CS12345678)");
+    const normalizedStudentId = formData.studentId.toUpperCase();
+    if (!studentIdRegex.test(normalizedStudentId)) {
+      setError('StudentID must be 2 letters followed by 8 digits (e.g., CS12345678)');
       setIsLoading(false);
       return;
     }
 
-    // Validate passwords match
+    const expectedEmail = `${normalizedStudentId.toLowerCase()}@my.sliit.lk`;
+    if (formData.email.trim().toLowerCase() !== expectedEmail) {
+      setError(`Email must match your student ID (e.g., ${expectedEmail})`);
+      setIsLoading(false);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
 
-    // Validate password length
     if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError('Password must be at least 6 characters');
       setIsLoading(false);
       return;
     }
@@ -71,34 +102,65 @@ export function RegistrationModal({
       const result = await api.auth.register({
         firstName: formData.firstName,
         lastName: formData.lastName,
-        studentId: formData.studentId.toUpperCase(),
-        email: formData.email,
+        studentId: normalizedStudentId,
+        email: formData.email.trim().toLowerCase(),
         password: formData.password,
         confirmPassword: formData.confirmPassword,
       });
 
       if (!result.success) {
-        throw new Error(result.error || "Registration failed");
+        throw new Error(result.error || result.data?.message || 'Registration failed');
       }
 
-      // Store token and member data
-      localStorage.setItem("authToken", result.data.token);
-      localStorage.setItem("member", JSON.stringify(result.data.member));
-
-      // Extract name from member object
-      const displayName = `${result.data.member.firstName} ${result.data.member.lastName}`;
-      setSuccess("Registration successful! Welcome to SLIIT Choir!");
-      
-      setTimeout(() => {
-        onRegister(displayName);
-        onClose();
-      }, 1500);
+      setPendingStudentId(normalizedStudentId);
+      setStep('otp');
+      setSuccess('We sent a 6-digit code to your SLIIT email. Enter it below to activate your account.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    setSuccess('');
+
+    if (otp.trim().length !== 6) {
+      setError('Enter the 6-digit code we emailed you');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const result = await api.auth.verifyEmail({
+        studentId: pendingStudentId,
+        otp: otp.trim(),
+      });
+
+      if (!result.success) {
+        throw new Error(result.error || result.data?.message || 'Verification failed');
+      }
+
+      localStorage.setItem('authToken', result.data.token);
+      localStorage.setItem('member', JSON.stringify(result.data.member));
+      const displayName = `${result.data.member.firstName} ${result.data.member.lastName}`;
+      setSuccess('Email verified! Redirecting...');
+
+      setTimeout(() => {
+        onRegister(displayName);
+        onClose();
+      }, 1200);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Verification failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const isFormStep = step === 'form';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -117,7 +179,8 @@ export function RegistrationModal({
           </div>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {isFormStep ? (
+          <form onSubmit={handleRegisterSubmit} className="space-y-4">
           {error && (
             <div className="p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm">
               {error}
@@ -221,24 +284,79 @@ export function RegistrationModal({
             />
           </div>
 
-          <Button 
-            type="submit" 
-            className="w-full bg-blue-600 hover:bg-blue-700"
-            disabled={isLoading}
-          >
-            {isLoading ? "Creating Account..." : "Register"}
-          </Button>
-        </form>
+            <Button 
+              type="submit" 
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={isLoading}
+            >
+              {isLoading ? "Creating Account..." : "Register"}
+            </Button>
+          </form>
+        ) : (
+          <form onSubmit={handleOtpSubmit} className="space-y-4">
+            {error && (
+              <div className="p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm">
+                {error}
+              </div>
+            )}
 
-        <p className="text-sm text-gray-600 text-center">
-          Already a member?{" "}
-          <button 
-            onClick={onSwitchToLogin}
-            className="text-blue-600 hover:text-blue-700 font-medium"
-          >
-            Login here
-          </button>
-        </p>
+            {success && (
+              <div className="p-3 bg-blue-100 border border-blue-200 rounded-lg text-blue-800 text-sm">
+                {success}
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="otp">Enter OTP</Label>
+              <Input
+                id="otp"
+                name="otp"
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="123456"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
+                disabled={isLoading}
+                required
+              />
+              <p className="text-xs text-gray-500">We sent the code to {`${pendingStudentId.toLowerCase()}@my.sliit.lk`}</p>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Verifying...' : 'Verify Email'}
+            </Button>
+
+            <button
+              type="button"
+              className="w-full text-sm text-gray-500 hover:text-gray-700"
+              disabled={isLoading}
+              onClick={() => {
+                setStep('form');
+                setSuccess('');
+                setError('');
+              }}
+            >
+              Edit details instead
+            </button>
+          </form>
+        )}
+
+        {isFormStep && (
+          <p className="text-sm text-gray-600 text-center">
+            Already a member?{" "}
+            <button 
+              onClick={onSwitchToLogin}
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
+              Login here
+            </button>
+          </p>
+        )}
       </DialogContent>
     </Dialog>
   );

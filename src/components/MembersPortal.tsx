@@ -8,11 +8,10 @@ import ScheduleAttendanceModal from "./ScheduleAttendanceModal";
 import MerchandiseCatalog from "./MerchandiseCatalog";
 import MerchandiseManagement from "./MerchandiseManagement";
 import OrderCheckout from "./OrderCheckout";
-import MyOrders from "./MyOrders";
 import OrderManagement from "./OrderManagement";
 import ResourceManagement from "./ResourceManagement";
 import ResourceBrowser from "./ResourceBrowser";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 interface PracticeSchedule {
@@ -39,13 +38,34 @@ interface MembersPortalProps {
   memberName: string;
 }
 
+type MembersTabKey = 'schedule' | 'merchandise' | 'resources' | 'attendance';
+
 export function MembersPortal({ memberName }: MembersPortalProps) {
   const [selectedScheduleForAttendance, setSelectedScheduleForAttendance] = useState<PracticeSchedule | null>(null);
   const [showMerchandiseManagement, setShowMerchandiseManagement] = useState(false);
   const [showOrderManagement, setShowOrderManagement] = useState(false);
   const [checkoutCart, setCheckoutCart] = useState<any[]>([]);
   const [showCheckout, setShowCheckout] = useState(false);
+  const getInitialTab = (): MembersTabKey => {
+    if (typeof window === 'undefined') return 'schedule';
+    const stored = localStorage.getItem('membersTab');
+    if (stored === 'merchandise' || stored === 'resources' || stored === 'attendance') {
+      return stored;
+    }
+    return 'schedule';
+  };
+  const [activeTab, setActiveTab] = useState<MembersTabKey>(getInitialTab);
   const isAdmin = hasRole(['admin', 'moderator']);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('membersTab', activeTab);
+    }
+  }, [activeTab]);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as MembersTabKey);
+  };
 
   return (
     <motion.div
@@ -69,7 +89,7 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
           </p>
         </motion.div>
 
-        <Tabs defaultValue="schedule" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
           <TabsList className="grid w-full max-w-md grid-cols-4">
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
             <TabsTrigger value="merchandise">Merchandise</TabsTrigger>
@@ -156,7 +176,22 @@ export function MembersPortal({ memberName }: MembersPortalProps) {
                   />
                 </motion.div>
                 <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.35 }}>
-                  <MyOrders />
+                  <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-blue-900 font-semibold">Order History Moved</p>
+                      <p className="text-sm text-blue-700">View and track all your purchases on the dedicated My Orders page.</p>
+                    </div>
+                    <Button
+                      className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+                      onClick={() => {
+                        localStorage.setItem('membersTab', 'merchandise');
+                        window.history.pushState({}, '', '/my-orders');
+                        window.dispatchEvent(new PopStateEvent('popstate'));
+                      }}
+                    >
+                      Go to My Orders
+                    </Button>
+                  </div>
                 </motion.div>
               </>
             )}

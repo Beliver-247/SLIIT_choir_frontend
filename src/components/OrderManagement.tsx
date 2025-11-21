@@ -238,7 +238,7 @@ export default function OrderManagement() {
     <div className="space-y-6">
       {/* Stats Cards */}
       {stats && (
-        <div className="grid md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
           <Card>
             <CardContent className="p-4">
               <div className="text-sm text-gray-600">Total Orders</div>
@@ -275,7 +275,7 @@ export default function OrderManagement() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="grid md:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
             <div>
               <Label htmlFor="status-filter">Status</Label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -326,7 +326,7 @@ export default function OrderManagement() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <Label htmlFor="start-date">Start Date</Label>
               <Input
@@ -348,7 +348,7 @@ export default function OrderManagement() {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button onClick={fetchOrders} variant="outline" className="flex-1">
               <Filter className="h-4 w-4 mr-2" />
               Apply Filters
@@ -382,7 +382,7 @@ export default function OrderManagement() {
             <div className="space-y-4">
               {orders.map((order) => (
                 <div key={order._id} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
                         <span className="font-semibold text-blue-900">
@@ -401,6 +401,7 @@ export default function OrderManagement() {
                     <Button
                       size="sm"
                       variant="outline"
+                      className="w-full sm:w-auto"
                       onClick={() => setSelectedOrder(order)}
                     >
                       <Eye className="h-4 w-4 mr-1" />
@@ -408,9 +409,9 @@ export default function OrderManagement() {
                     </Button>
                   </div>
 
-                  <div className="space-y-1">
+                  <div className="space-y-1 divide-y">
                     {order.items.map((item, index) => (
-                      <div key={index} className="text-sm flex justify-between">
+                      <div key={index} className="pt-1 text-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                         <span className="text-gray-700">
                           {item.name} (Size: {item.size}) × {item.quantity}
                         </span>
@@ -429,7 +430,7 @@ export default function OrderManagement() {
                   </div>
 
                   {order.status === 'pending' && (
-                    <div className="flex gap-2 pt-2">
+                    <div className="flex flex-col sm:flex-row gap-2 pt-2">
                       <Button
                         onClick={() => handleConfirmOrder(order._id)}
                         className="flex-1 bg-green-600 hover:bg-green-700 text-white"
@@ -462,7 +463,7 @@ export default function OrderManagement() {
             <CardHeader className="bg-white">
               <CardTitle className="text-gray-900">Order Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 bg-white">
+            <CardContent className="space-y-4 bg-white p-4 sm:p-6">
               <div>
                 <h3 className="font-semibold mb-2">Customer Information</h3>
                 <div className="text-sm space-y-1">
@@ -521,7 +522,7 @@ export default function OrderManagement() {
                       rows={3}
                     />
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Button
                       onClick={() => handleConfirmOrder(selectedOrder._id)}
                       className="flex-1 bg-green-600 hover:bg-green-700 text-white"
