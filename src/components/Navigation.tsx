@@ -37,7 +37,7 @@ export function Navigation({
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
+      <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-brand-navy/10 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <button onClick={onHomeClick} className="flex items-center hover:opacity-80 transition-opacity">
@@ -48,21 +48,21 @@ export function Navigation({
             <div className="hidden md:flex items-center gap-6">
               {currentPage === "home" ? (
                 <>
-                  <a href="#about" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
-                    <Sparkles className="h-4 w-4 text-blue-500" />
+                  <a href="#about" className="flex items-center gap-2 text-brand-navy/80 hover:text-brand-orange transition-colors">
+                    <Sparkles className="h-4 w-4 text-brand-orange" />
                     About
                   </a>
-                  <a href="#events" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
-                    <CalendarPlus className="h-4 w-4 text-blue-500" />
+                  <a href="#events" className="flex items-center gap-2 text-brand-navy/80 hover:text-brand-orange transition-colors">
+                    <CalendarPlus className="h-4 w-4 text-brand-orange" />
                     Events
                   </a>
-                  <a href="#donate" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
-                    <Gift className="h-4 w-4 text-blue-500" />
+                  <a href="#donate" className="flex items-center gap-2 text-brand-navy/80 hover:text-brand-orange transition-colors">
+                    <Gift className="h-4 w-4 text-brand-orange" />
                     Donate
                   </a>
                 </>
               ) : (
-                <button onClick={onHomeClick} className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
+                <button onClick={onHomeClick} className="flex items-center gap-2 text-brand-navy/80 hover:text-brand-orange transition-colors">
                   <Home className="h-4 w-4" />
                   Home
                 </button>
@@ -96,7 +96,7 @@ export function Navigation({
                   {canCreate && currentPage === "members" && (
                     <Button
                       onClick={onCreateEventClick}
-                      className="bg-green-600 hover:bg-green-700 gap-2"
+                      className="bg-brand-orange hover:bg-brand-orange/90 gap-2"
                     >
                       <CalendarPlus className="h-4 w-4" />
                       Create Event
@@ -105,7 +105,7 @@ export function Navigation({
                   {canCreateSched && currentPage === "members" && (
                     <Button
                       onClick={onCreateScheduleClick}
-                      className="bg-purple-600 hover:bg-purple-700 gap-2"
+                      className="bg-brand-purple hover:bg-brand-purple/90 gap-2"
                     >
                       <ClipboardList className="h-4 w-4" />
                       Create Schedule
@@ -114,13 +114,13 @@ export function Navigation({
                   {canCreate && currentPage === "members" && (
                     <Button
                       onClick={onAnalyticsClick}
-                      className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+                      className="bg-brand-green hover:bg-brand-green/90 gap-2"
                     >
                       <BarChart3 className="h-4 w-4" />
                       Attendance Analytics
                     </Button>
                   )}
-                  <div className="flex items-center gap-2 text-gray-700">
+                  <div className="flex items-center gap-2 text-brand-navy">
                     <User className="h-4 w-4" />
                     <span>{memberName}</span>
                   </div>
@@ -130,7 +130,7 @@ export function Navigation({
                   </Button>
                 </div>
               ) : (
-                <Button onClick={onLoginClick} className="bg-blue-600 hover:bg-blue-700">
+                <Button onClick={onLoginClick} className="bg-brand-blue hover:bg-brand-blue/90">
                   Members Login
                 </Button>
               )}
@@ -141,7 +141,7 @@ export function Navigation({
               className="md:hidden p-2"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <Menu className="h-6 w-6 text-gray-700" />
+              <Menu className="h-6 w-6 text-brand-navy" />
             </button>
           </div>
         </div>
@@ -159,20 +159,20 @@ export function Navigation({
               onClick={closeMenu}
             />
             <motion.div
-              className="fixed top-0 right-0 bottom-0 w-4/5 max-w-sm bg-white shadow-2xl border-l border-blue-100 z-[80] md:hidden"
+              className="fixed top-0 right-0 bottom-0 w-4/5 max-w-sm bg-white shadow-2xl border-l border-brand-blue/20 z-[80] md:hidden"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 260, damping: 30 }}
             >
               <div className="pt-6 pb-10 px-6 space-y-6 overflow-y-auto h-full">
-                <div className="flex items-center gap-3 pb-4 border-b border-white/40">
+                <div className="flex items-center gap-3 pb-4 border-b border-brand-navy/10">
                   <img src={CarolsLogo} alt="SLIIT Choir" className="h-12 w-auto object-contain" />
-                  <p className="text-base font-semibold text-blue-900">Quick Navigation</p>
+                  <p className="text-base font-semibold text-brand-navy">Quick Navigation</p>
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Main Sections</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-brand-gray">Main Sections</p>
                   {currentPage === "home" ? (
                     <div className="grid gap-2">
                       {[{ label: "About", href: "#about" }, { label: "Events", href: "#events" }, { label: "Carol Service", href: "#carol-service" }, { label: "Donate", href: "#donate" }].map((link) => (
@@ -180,9 +180,9 @@ export function Navigation({
                           key={link.label}
                           href={link.href}
                           onClick={closeMenu}
-                          className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/70 px-4 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-blue-200 hover:text-blue-700 transition"
+                          className="flex items-center gap-3 rounded-2xl border border-brand-blue/15 bg-white px-4 py-3 text-sm font-medium text-brand-navy/80 shadow-sm hover:border-brand-orange/40 hover:text-brand-orange transition"
                         >
-                          <Sparkles className="h-4 w-4 text-blue-500" />
+                          <Sparkles className="h-4 w-4 text-brand-orange" />
                           {link.label}
                         </a>
                       ))}
@@ -193,9 +193,9 @@ export function Navigation({
                         onHomeClick();
                         closeMenu();
                       }}
-                      className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm hover:border-blue-200 hover:text-blue-700 transition"
+                      className="flex items-center gap-3 rounded-2xl border border-brand-blue/15 bg-white px-4 py-3 text-sm font-semibold text-brand-navy shadow-sm hover:border-brand-orange/40 hover:text-brand-orange transition"
                     >
-                      <Home className="h-4 w-4 text-blue-600" />
+                      <Home className="h-4 w-4 text-brand-blue" />
                       Back to Home
                     </button>
                   )}
@@ -203,7 +203,7 @@ export function Navigation({
 
                 {isLoggedIn ? (
                   <div className="space-y-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Member Actions</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-brand-gray">Member Actions</p>
                     {currentPage !== "members" && (
                       <Button
                         onClick={() => {
@@ -212,9 +212,9 @@ export function Navigation({
                           closeMenu();
                         }}
                         variant="outline"
-                        className="w-full justify-start gap-3 rounded-2xl border-slate-200 bg-white/80 text-slate-800"
+                        className="w-full justify-start gap-3 rounded-2xl border-brand-navy/20 bg-white text-brand-navy"
                       >
-                        <Home className="h-4 w-4 text-blue-600" />
+                        <Home className="h-4 w-4 text-brand-blue" />
                         Member Portal
                       </Button>
                     )}
@@ -225,9 +225,9 @@ export function Navigation({
                           closeMenu();
                         }}
                         variant="outline"
-                        className="w-full justify-start gap-3 rounded-2xl border-slate-200 bg-white/80 text-slate-800"
+                        className="w-full justify-start gap-3 rounded-2xl border-brand-navy/20 bg-white text-brand-navy"
                       >
-                        <ShoppingBag className="h-4 w-4 text-blue-600" />
+                        <ShoppingBag className="h-4 w-4 text-brand-blue" />
                         My Orders
                       </Button>
                     )}
@@ -237,7 +237,7 @@ export function Navigation({
                           onCreateEventClick();
                           closeMenu();
                         }}
-                        className="w-full justify-start gap-3 rounded-2xl bg-green-500 hover:bg-green-600 text-white"
+                        className="w-full justify-start gap-3 rounded-2xl bg-brand-orange hover:bg-brand-orange/90 text-white"
                       >
                         <CalendarPlus className="h-4 w-4" />
                         Create Event
@@ -249,7 +249,7 @@ export function Navigation({
                           onCreateScheduleClick();
                           closeMenu();
                         }}
-                        className="w-full justify-start gap-3 rounded-2xl bg-purple-500 hover:bg-purple-600 text-white"
+                        className="w-full justify-start gap-3 rounded-2xl bg-brand-purple hover:bg-brand-purple/90 text-white"
                       >
                         <ClipboardList className="h-4 w-4" />
                         Create Schedule
@@ -261,19 +261,19 @@ export function Navigation({
                           onAnalyticsClick();
                           closeMenu();
                         }}
-                        className="w-full justify-start gap-3 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white"
+                        className="w-full justify-start gap-3 rounded-2xl bg-brand-green hover:bg-brand-green/90 text-white"
                       >
                         <BarChart3 className="h-4 w-4" />
                         Attendance Analytics
                       </Button>
                     )}
                     <div className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/70 px-4 py-3 text-sm">
-                      <div className="h-9 w-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
+                      <div className="h-9 w-9 rounded-full bg-brand-blue/10 text-brand-blue flex items-center justify-center">
                         <User className="h-4 w-4" />
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500">Signed in as</p>
-                        <p className="font-semibold text-slate-800">{memberName}</p>
+                        <p className="text-xs text-brand-navy/70">Signed in as</p>
+                        <p className="font-semibold text-brand-navy">{memberName}</p>
                       </div>
                     </div>
                     <Button
@@ -282,7 +282,7 @@ export function Navigation({
                         closeMenu();
                       }}
                       variant="outline"
-                      className="w-full justify-start gap-3 rounded-2xl border-2 border-slate-300 bg-white text-slate-800 hover:bg-slate-50"
+                      className="w-full justify-start gap-3 rounded-2xl border-2 border-brand-navy/20 bg-white text-brand-navy hover:bg-brand-blue/5"
                     >
                       <LogOut className="h-4 w-4" />
                       Logout
@@ -290,33 +290,33 @@ export function Navigation({
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Members</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-brand-gray">Members</p>
                     <Button
                       onClick={() => {
                         onLoginClick();
                         closeMenu();
                       }}
-                      className="w-full justify-center gap-3 rounded-2xl bg-blue-600 hover:bg-blue-700"
+                      className="w-full justify-center gap-3 rounded-2xl bg-brand-blue hover:bg-brand-blue/90"
                     >
                       <User className="h-4 w-4" />
                       Members Login
                     </Button>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-brand-gray">
                       Access choir resources, order merchandise, and stay updated on schedules.
                     </p>
                   </div>
                 )}
 
-                <div className="rounded-3xl border border-blue-100 bg-white/80 p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-blue-900 flex items-center gap-2">
-                    <PhoneCall className="h-4 w-4 text-blue-600" /> Need quick help?
+                <div className="rounded-3xl border border-brand-blue/15 bg-white/80 p-4 shadow-sm">
+                  <p className="text-sm font-semibold text-brand-navy flex items-center gap-2">
+                    <PhoneCall className="h-4 w-4 text-brand-blue" /> Need quick help?
                   </p>
-                  <p className="text-xs text-slate-600 mt-1">
+                  <p className="text-xs text-brand-navy/70 mt-1">
                     Reach out to the choir coordinators for urgent questions about events or merchandise.
                   </p>
                   <a
                     href="mailto:choir@sliit.lk"
-                    className="mt-3 inline-flex items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-100"
+                    className="mt-3 inline-flex items-center justify-center rounded-2xl border border-brand-blue/20 bg-brand-blue/10 px-4 py-2 text-sm font-semibold text-brand-blue hover:bg-brand-blue/20"
                   >
                     choir@sliit.lk
                   </a>

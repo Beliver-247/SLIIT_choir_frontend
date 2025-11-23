@@ -82,8 +82,8 @@ export function Events() {
     <section id="events" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4 }}>
-          <h2 className="text-blue-900 mb-4">Upcoming Events</h2>
-          <p className="text-gray-600 text-xl max-w-3xl mx-auto">
+          <h2 className="text-brand-navy mb-4">Upcoming Events</h2>
+          <p className="text-brand-navy/80 text-xl max-w-3xl mx-auto">
             Join us at our performances and events throughout the year. 
             Every event is an opportunity to experience beautiful music and support worthy causes.
           </p>
@@ -92,8 +92,8 @@ export function Events() {
         {isLoading && (
           <div className="flex justify-center items-center py-12">
             <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-              <p className="text-gray-600">Loading events...</p>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-brand-orange mb-4"></div>
+              <p className="text-brand-navy/70">Loading events...</p>
             </div>
           </div>
         )}
@@ -106,7 +106,7 @@ export function Events() {
 
         {!isLoading && events.length === 0 && !error && (
           <div className="text-center py-12">
-            <p className="text-gray-600">No upcoming events at the moment. Please check back later!</p>
+            <p className="text-brand-navy/70">No upcoming events at the moment. Please check back later!</p>
           </div>
         )}
 
@@ -128,21 +128,21 @@ export function Events() {
                 )}
               </div>
               <CardContent className="p-6">
-                <h3 className="text-blue-900 mb-3 line-clamp-2">{event.title}</h3>
-                <p className="text-gray-600 mb-4 line-clamp-2">{event.description || 'Event details coming soon...'}</p>
+                <h3 className="text-brand-navy mb-3 line-clamp-2">{event.title}</h3>
+                <p className="text-brand-navy/70 mb-4 line-clamp-2">{event.description || 'Event details coming soon...'}</p>
                 
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 text-brand-navy/70">
                     <Calendar className="h-4 w-4 flex-shrink-0" />
                     <span className="text-sm">{formatDate(event.date)}</span>
                   </div>
                   {event.time && (
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-brand-navy/70">
                       <Clock className="h-4 w-4 flex-shrink-0" />
                       <span className="text-sm">{formatTime(event.time)}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 text-brand-navy/70">
                     <MapPin className="h-4 w-4 flex-shrink-0" />
                     <span className="text-sm line-clamp-1">{event.location}</span>
                   </div>
