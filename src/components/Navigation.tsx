@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { canCreateEvents, canCreateSchedules } from "../utils/roleUtils";
+import CarolsLogo from "../Assets/CarolsLogo.png";
 
 interface NavigationProps {
   onLoginClick: () => void;
@@ -39,12 +40,8 @@ export function Navigation({
       <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <button onClick={onHomeClick} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <Music className="h-8 w-8 text-blue-600" />
-              <div>
-                <div className="text-blue-900">SLIIT Choir</div>
-                <div className="text-xs text-gray-600">Sri Lanka Institute of Information Technology</div>
-              </div>
+            <button onClick={onHomeClick} className="flex items-center hover:opacity-80 transition-opacity">
+              <img src={CarolsLogo} alt="SLIIT Choir" className="h-12 w-auto object-contain" />
             </button>
 
             {/* Desktop Navigation */}
@@ -58,10 +55,6 @@ export function Navigation({
                   <a href="#events" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
                     <CalendarPlus className="h-4 w-4 text-blue-500" />
                     Events
-                  </a>
-                  <a href="#carol-service" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
-                    <Music className="h-4 w-4 text-blue-500" />
-                    Carol Service
                   </a>
                   <a href="#donate" className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
                     <Gift className="h-4 w-4 text-blue-500" />
@@ -174,13 +167,8 @@ export function Navigation({
             >
               <div className="pt-6 pb-10 px-6 space-y-6 overflow-y-auto h-full">
                 <div className="flex items-center gap-3 pb-4 border-b border-white/40">
-                  <div className="h-10 w-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-md">
-                    <Music className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-blue-500 font-semibold">SLIIT Choir</p>
-                    <p className="text-base font-semibold text-blue-900">Quick Navigation</p>
-                  </div>
+                  <img src={CarolsLogo} alt="SLIIT Choir" className="h-12 w-auto object-contain" />
+                  <p className="text-base font-semibold text-blue-900">Quick Navigation</p>
                 </div>
 
                 <div className="space-y-2">
