@@ -1,4 +1,4 @@
-import { Music, Menu, LogOut, User, Home, ShoppingBag, CalendarPlus, ClipboardList, BarChart3, Sparkles, PhoneCall, Gift } from "lucide-react";
+import { Menu, LogOut, User, Home, ShoppingBag, CalendarPlus, ClipboardList, BarChart3, Sparkles, PhoneCall, Gift } from "lucide-react";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
