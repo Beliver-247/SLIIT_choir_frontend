@@ -26,11 +26,11 @@ export function About() {
   ];
 
   return (
-    <section id="about" className="py-20 bg-gray-50">
+    <section id="about" className="py-20 bg-brand-blue/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4 }}>
-          <h2 className="text-blue-900 mb-4">About SLIIT Choir</h2>
-          <p className="text-gray-600 text-xl max-w-3xl mx-auto">
+          <h2 className="text-brand-navy mb-4">About SLIIT Choir</h2>
+          <p className="text-brand-navy/80 text-xl max-w-3xl mx-auto">
             We are more than just a choir – we're a community dedicated to spreading joy 
             through music while making a positive impact through our charitable initiatives.
           </p>
@@ -40,14 +40,14 @@ export function About() {
           {features.map((feature, index) => (
             <motion.div 
               key={index}
-              className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-transparent hover:border-brand-orange/30"
               variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 }}}
             >
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <feature.icon className="h-6 w-6 text-blue-600" />
+              <div className="w-12 h-12 bg-brand-orange/10 rounded-lg flex items-center justify-center mb-4">
+                <feature.icon className="h-6 w-6 text-brand-orange" />
               </div>
-              <h3 className="text-blue-900 mb-2">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
+              <h3 className="text-brand-navy mb-2">{feature.title}</h3>
+              <p className="text-brand-navy/75">{feature.description}</p>
             </motion.div>
           ))}
         </motion.div>
