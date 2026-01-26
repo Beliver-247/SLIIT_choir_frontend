@@ -11,9 +11,10 @@ interface LoginModalProps {
   onClose: () => void;
   onLogin: (name: string) => void;
   onSwitchToRegister: () => void;
+  onForgotPassword: () => void;
 }
 
-export function LoginModal({ isOpen, onClose, onLogin, onSwitchToRegister }: LoginModalProps) {
+export function LoginModal({ isOpen, onClose, onLogin, onSwitchToRegister, onForgotPassword }: LoginModalProps) {
   const [studentId, setStudentId] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -101,9 +102,17 @@ export function LoginModal({ isOpen, onClose, onLogin, onSwitchToRegister }: Log
           </div>
 
           <div className="flex justify-between items-center text-sm">
-            <a href="#" className="text-blue-600 hover:text-blue-700">
+            <button
+              type="button"
+              className="text-blue-600 hover:text-blue-700"
+              onClick={() => {
+                onClose();
+                onForgotPassword();
+              }}
+              disabled={isLoading}
+            >
               Forgot password?
-            </a>
+            </button>
           </div>
 
           <Button 

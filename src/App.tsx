@@ -10,6 +10,7 @@ import { MembersPortal } from "./components/MembersPortal";
 import { LoginModal } from "./components/LoginModal";
 import { RegistrationModal } from "./components/RegistrationModal";
 import AuthSuccess from "./components/AuthSuccess";
+import { ForgotPasswordModal } from "./components/ForgotPasswordModal";
 import { EventCreation } from "./components/EventCreation";
 import PracticeScheduleCreation from "./components/PracticeScheduleCreation";
 import AttendanceTaking from "./components/AttendanceTaking";
@@ -35,6 +36,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [memberName, setMemberName] = useState("");
 
   useEffect(() => {
@@ -74,12 +76,20 @@ export default function App() {
 
   const handleLoginClick = () => {
     setShowRegistrationModal(false);
+    setShowForgotPasswordModal(false);
     setShowLoginModal(true);
   };
 
   const handleRegisterClick = () => {
     setShowLoginModal(false);
+    setShowForgotPasswordModal(false);
     setShowRegistrationModal(true);
+  };
+
+  const handleForgotPasswordClick = () => {
+    setShowLoginModal(false);
+    setShowRegistrationModal(false);
+    setShowForgotPasswordModal(true);
   };
 
   const handleLogin = (name: string) => {
@@ -232,6 +242,7 @@ export default function App() {
         onClose={() => setShowLoginModal(false)}
         onLogin={handleLogin}
         onSwitchToRegister={handleRegisterClick}
+        onForgotPassword={handleForgotPasswordClick}
       />
 
       <RegistrationModal 
@@ -239,6 +250,16 @@ export default function App() {
         onClose={() => setShowRegistrationModal(false)}
         onRegister={handleRegister}
         onSwitchToLogin={handleLoginClick}
+      />
+
+      <ForgotPasswordModal
+        isOpen={showForgotPasswordModal}
+        onClose={() => setShowForgotPasswordModal(false)}
+        onResetComplete={() => {
+          setShowForgotPasswordModal(false);
+          setShowLoginModal(true);
+          window.history.pushState({}, "", "/");
+        }}
       />
     </div>
   );
