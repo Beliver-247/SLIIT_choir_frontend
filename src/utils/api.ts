@@ -101,6 +101,20 @@ export const api = {
         body: JSON.stringify(data),
       });
     },
+
+    requestPasswordReset(email: string) {
+      return api.request('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+    },
+
+    resetPassword(data: { email: string; otp: string; password: string; confirmPassword: string }) {
+      return api.request('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
   },
 
   // Members endpoints
