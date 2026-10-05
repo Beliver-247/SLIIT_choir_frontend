@@ -18,9 +18,10 @@ import AttendanceAnalytics from "./components/AttendanceAnalytics";
 import MemberAttendanceReport from "./components/MemberAttendanceReport";
 import MyOrdersPage from "./components/MyOrdersPage";
 import MerchandiseItemPage from "./components/MerchandiseItemPage";
+import { Gallery } from "./components/Gallery";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<"home" | "members" | "auth-success" | "create-event" | "create-schedule" | "attendance" | "attendance-analytics" | "member-report" | "my-orders" | "merchandise-item">(() => {
+  const [currentPage, setCurrentPage] = useState<"home" | "members" | "auth-success" | "create-event" | "create-schedule" | "attendance" | "attendance-analytics" | "member-report" | "my-orders" | "merchandise-item" | "gallery">(() => {
     const path = window.location.pathname;
     if (path === "/members") return "members";
     if (path === "/auth-success") return "auth-success";
@@ -31,6 +32,7 @@ export default function App() {
     if (path.startsWith("/member-report/")) return "member-report";
     if (path === "/my-orders") return "my-orders";
     if (path.startsWith("/merchandise/")) return "merchandise-item";
+    if (path === "/gallery") return "gallery";
     return "home";
   });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -68,6 +70,7 @@ export default function App() {
       else if (path.startsWith("/member-report/")) setCurrentPage("member-report");
       else if (path === "/my-orders") setCurrentPage("my-orders");
       else if (path.startsWith("/merchandise/")) setCurrentPage("merchandise-item");
+      else if (path === "/gallery") setCurrentPage("gallery");
       else setCurrentPage("home");
     };
     window.addEventListener("popstate", syncPageWithPath);
@@ -132,6 +135,11 @@ export default function App() {
     window.history.pushState({}, "", "/my-orders");
   };
 
+  const handleGalleryClick = () => {
+    setCurrentPage("gallery");
+    window.history.pushState({}, "", "/gallery");
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navigation 
@@ -148,6 +156,7 @@ export default function App() {
         }}
         onAnalyticsClick={handleAnalyticsClick}
         onMyOrdersClick={handleMyOrdersClick}
+        onGalleryClick={handleGalleryClick}
         isLoggedIn={isLoggedIn}
         memberName={memberName}
         currentPage={currentPage}
@@ -233,6 +242,8 @@ export default function App() {
             </div>
           );
         })()
+      ) : currentPage === "gallery" ? (
+        <Gallery />
       ) : (
         <MembersPortal memberName={memberName} />
       )}
