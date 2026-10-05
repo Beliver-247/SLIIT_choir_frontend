@@ -142,7 +142,7 @@ export function Gallery() {
           <select 
             value={filterYear} 
             onChange={(e) => setFilterYear(e.target.value)}
-            className="border-gray-300 rounded-lg text-sm focus:border-brand-blue focus:ring-brand-blue"
+            className="border border-gray-300 rounded-lg text-sm px-3 py-2 focus:border-brand-blue focus:ring-brand-blue"
           >
             <option value="">All Years</option>
             {years.map(y => <option key={y} value={y}>{y}</option>)}
@@ -151,7 +151,7 @@ export function Gallery() {
           <select 
             value={filterMonth} 
             onChange={(e) => setFilterMonth(e.target.value)}
-            className="border-gray-300 rounded-lg text-sm focus:border-brand-blue focus:ring-brand-blue"
+            className="border border-gray-300 rounded-lg text-sm px-3 py-2 focus:border-brand-blue focus:ring-brand-blue"
           >
             <option value="">All Months</option>
             {months.map((m, i) => <option key={i+1} value={i+1}>{m}</option>)}
@@ -160,7 +160,7 @@ export function Gallery() {
           <select 
             value={filterType} 
             onChange={(e) => setFilterType(e.target.value)}
-            className="border-gray-300 rounded-lg text-sm focus:border-brand-blue focus:ring-brand-blue"
+            className="border border-gray-300 rounded-lg text-sm px-3 py-2 focus:border-brand-blue focus:ring-brand-blue"
           >
             <option value="">All Types</option>
             <option value="image">Images</option>
@@ -242,7 +242,7 @@ export function Gallery() {
                   type="text" 
                   value={uploadTitle}
                   onChange={(e) => setUploadTitle(e.target.value)}
-                  className="w-full rounded-lg border-gray-300 focus:border-brand-blue focus:ring-brand-blue"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-blue focus:ring-brand-blue"
                   required
                 />
               </div>
@@ -252,7 +252,7 @@ export function Gallery() {
                 <textarea 
                   value={uploadDescription}
                   onChange={(e) => setUploadDescription(e.target.value)}
-                  className="w-full rounded-lg border-gray-300 focus:border-brand-blue focus:ring-brand-blue"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-blue focus:ring-brand-blue"
                   rows={3}
                 />
               </div>
@@ -263,7 +263,7 @@ export function Gallery() {
                   <select 
                     value={uploadType}
                     onChange={(e) => setUploadType(e.target.value as "image" | "video")}
-                    className="w-full rounded-lg border-gray-300 focus:border-brand-blue focus:ring-brand-blue"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-blue focus:ring-brand-blue"
                   >
                     <option value="image">Image</option>
                     <option value="video">Video</option>
@@ -274,7 +274,7 @@ export function Gallery() {
                   <select 
                     value={uploadYear}
                     onChange={(e) => setUploadYear(e.target.value)}
-                    className="w-full rounded-lg border-gray-300 focus:border-brand-blue focus:ring-brand-blue"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-blue focus:ring-brand-blue"
                   >
                     {years.map(y => <option key={y} value={y}>{y}</option>)}
                   </select>
@@ -286,7 +286,7 @@ export function Gallery() {
                 <select 
                   value={uploadMonth}
                   onChange={(e) => setUploadMonth(e.target.value)}
-                  className="w-full rounded-lg border-gray-300 focus:border-brand-blue focus:ring-brand-blue"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-blue focus:ring-brand-blue"
                 >
                   {months.map((m, i) => <option key={i+1} value={i+1}>{m}</option>)}
                 </select>
@@ -298,7 +298,7 @@ export function Gallery() {
                   type="file" 
                   accept={uploadType === "image" ? "image/*" : "video/*"}
                   onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-blue/10 file:text-brand-blue hover:file:bg-brand-blue/20"
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-blue/10 file:text-brand-blue hover:file:bg-brand-blue/20 border border-gray-300 rounded-lg px-3 py-2"
                   required
                 />
               </div>
