@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Image, Video, Upload, X, Filter, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
-import { api } from "../utils/api";
+import { api, API_BASE_URL } from "../utils/api";
 import { isAdmin, isModerator } from "../utils/roleUtils";
 
 interface GalleryItem {
@@ -78,13 +78,8 @@ export function Gallery() {
 
       // Using raw fetch for FormData
       const token = api.getAuthToken();
-      // Use API_BASE_URL logic here, we know it from api.ts
-      const baseUrl = 'http://localhost:5000/api'; // Or use onrender URL if prod
-      // Wait, let's use relative fetch since api.request is already defined.
-      // But api.request sets 'Content-Type': 'application/json' by default if we don't override.
-      // We need to NOT set Content-Type so browser sets it with boundary for FormData
       
-      const res = await fetch(`${baseUrl}/gallery`, {
+      const res = await fetch(`${API_BASE_URL}/gallery`, {
         method: "POST",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
