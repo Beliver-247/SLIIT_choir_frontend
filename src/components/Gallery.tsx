@@ -33,6 +33,7 @@ export function Gallery() {
   const [uploadMonth, setUploadMonth] = useState((new Date().getMonth() + 1).toString());
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const canUpload = isAdmin() || isModerator();
 
@@ -67,6 +68,7 @@ export function Gallery() {
     }
 
     setUploading(true);
+    setUploadProgress(0);
     try {
       const formData = new FormData();
       formData.append("title", uploadTitle);
@@ -76,17 +78,36 @@ export function Gallery() {
       formData.append("month", uploadMonth);
       formData.append("file", uploadFile);
 
-      // Using raw fetch for FormData
       const token = api.getAuthToken();
       
-      const res = await fetch(`${API_BASE_URL}/gallery`, {
-        method: "POST",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: formData,
-      });
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", `${API_BASE_URL}/gallery`, true);
+        if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+        
+        xhr.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            setUploadProgress(percentComplete);
+          }
+        };
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to upload.");
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve();
+          } else {
+            try {
+              const res = JSON.parse(xhr.responseText);
+              reject(new Error(res.message || "Failed to upload."));
+            } catch (e) {
+              reject(new Error("Failed to upload."));
+            }
+          }
+        };
+
+        xhr.onerror = () => reject(new Error("Network error occurred during upload."));
+        xhr.send(formData);
+      });
 
       setShowUploadModal(false);
       setUploadFile(null);
@@ -99,6 +120,7 @@ export function Gallery() {
       alert(err.message || "Failed to upload to gallery.");
     } finally {
       setUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -303,8 +325,17 @@ export function Gallery() {
                 />
               </div>
 
+              {uploading && (
+                <div className="w-full bg-gray-100 rounded-full h-2.5 mt-4 overflow-hidden">
+                  <div 
+                    className="bg-brand-blue h-2.5 rounded-full transition-all duration-300" 
+                    style={{ width: `${uploadProgress}%` }}
+                  ></div>
+                </div>
+              )}
+
               <Button type="submit" disabled={uploading} className="w-full bg-brand-blue mt-4">
-                {uploading ? "Uploading..." : "Upload to Gallery"}
+                {uploading ? `Uploading... ${uploadProgress}%` : "Upload to Gallery"}
               </Button>
             </form>
           </div>
