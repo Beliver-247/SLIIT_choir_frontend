@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Image, Video, Upload, X, Filter, Trash2 } from "lucide-react";
+import { Image, Video, Upload, X, Filter, Trash2, Edit2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { api, API_BASE_URL } from "../utils/api";
 import { isAdmin, isModerator } from "../utils/roleUtils";
@@ -34,6 +34,8 @@ export function Gallery() {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const canUpload = isAdmin() || isModerator();
 
@@ -62,8 +64,12 @@ export function Gallery() {
 
   const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!uploadTitle || !uploadType || !uploadYear || !uploadMonth || !uploadFile) {
-      alert("Please fill in all required fields and select a file.");
+    if (!uploadTitle || !uploadType || !uploadYear || !uploadMonth) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+    if (!isEditing && !uploadFile) {
+      alert("Please select a file to upload.");
       return;
     }
 
@@ -76,13 +82,14 @@ export function Gallery() {
       formData.append("fileType", uploadType);
       formData.append("year", uploadYear);
       formData.append("month", uploadMonth);
-      formData.append("file", uploadFile);
+      if (uploadFile) formData.append("file", uploadFile);
 
       const token = api.getAuthToken();
       
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", `${API_BASE_URL}/gallery`, true);
+        const url = isEditing && editingId ? `${API_BASE_URL}/gallery/${editingId}` : `${API_BASE_URL}/gallery`;
+        xhr.open(isEditing ? "PUT" : "POST", url, true);
         if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
         
         xhr.upload.onprogress = (event) => {
@@ -98,9 +105,9 @@ export function Gallery() {
           } else {
             try {
               const res = JSON.parse(xhr.responseText);
-              reject(new Error(res.message || "Failed to upload."));
+              reject(new Error(res.message || "Failed to save item."));
             } catch (e) {
-              reject(new Error("Failed to upload."));
+              reject(new Error("Failed to save item."));
             }
           }
         };
@@ -109,19 +116,46 @@ export function Gallery() {
         xhr.send(formData);
       });
 
-      setShowUploadModal(false);
-      setUploadFile(null);
-      setUploadTitle("");
-      setUploadDescription("");
-      
+      closeModal();
       fetchGalleryItems();
     } catch (err: any) {
-      console.error("Upload error:", err);
-      alert(err.message || "Failed to upload to gallery.");
+      console.error("Save error:", err);
+      alert(err.message || "Failed to save gallery item.");
     } finally {
       setUploading(false);
       setUploadProgress(0);
     }
+  };
+
+  const openModalForCreate = () => {
+    setIsEditing(false);
+    setEditingId(null);
+    setUploadTitle("");
+    setUploadDescription("");
+    setUploadType("image");
+    setUploadYear(new Date().getFullYear().toString());
+    setUploadMonth((new Date().getMonth() + 1).toString());
+    setUploadFile(null);
+    setShowUploadModal(true);
+  };
+
+  const openModalForEdit = (item: GalleryItem) => {
+    setIsEditing(true);
+    setEditingId(item._id);
+    setUploadTitle(item.title);
+    setUploadDescription(item.description || "");
+    setUploadType(item.fileType);
+    setUploadYear(item.year.toString());
+    setUploadMonth(item.month.toString());
+    setUploadFile(null);
+    setShowUploadModal(true);
+  };
+
+  const closeModal = () => {
+    setShowUploadModal(false);
+    setIsEditing(false);
+    setEditingId(null);
+    setUploadFile(null);
   };
 
   const handleDelete = async (id: string) => {
@@ -148,7 +182,7 @@ export function Gallery() {
             <p className="text-gray-600 mt-2">Memories and performances of the SLIIT Choir</p>
           </div>
           {canUpload && (
-            <Button onClick={() => setShowUploadModal(true)} className="bg-brand-blue gap-2">
+            <Button onClick={openModalForCreate} className="bg-brand-blue gap-2">
               <Upload className="h-4 w-4" />
               Upload Item
             </Button>
@@ -202,13 +236,22 @@ export function Gallery() {
             {items.map((item) => (
               <div key={item._id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 group relative">
                 {canUpload && (
-                  <button 
-                    onClick={() => handleDelete(item._id)}
-                    className="absolute top-2 right-2 bg-white/80 p-1.5 rounded-full text-red-500 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                    title="Delete item"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <button 
+                      onClick={() => openModalForEdit(item)}
+                      className="bg-white/90 hover:bg-white p-1.5 rounded-full text-brand-blue shadow-sm transition-colors"
+                      title="Edit item"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(item._id)}
+                      className="bg-white/90 hover:bg-white p-1.5 rounded-full text-red-500 shadow-sm transition-colors"
+                      title="Delete item"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 )}
                 
                 <div className="aspect-video bg-gray-100 relative overflow-hidden flex items-center justify-center">
@@ -250,12 +293,14 @@ export function Gallery() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 relative max-h-[90vh] overflow-y-auto">
             <button 
-              onClick={() => setShowUploadModal(false)}
+              onClick={closeModal}
               className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
             >
               <X className="h-5 w-5" />
             </button>
-            <h2 className="text-2xl font-bold text-brand-navy mb-6">Upload to Gallery</h2>
+            <h2 className="text-2xl font-bold text-brand-navy mb-6">
+              {isEditing ? "Edit Gallery Item" : "Upload to Gallery"}
+            </h2>
             
             <form onSubmit={handleUploadSubmit} className="space-y-4">
               <div>
@@ -315,13 +360,15 @@ export function Gallery() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">File</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {isEditing ? "Replace File (Optional)" : "File"}
+                </label>
                 <input 
                   type="file" 
                   accept={uploadType === "image" ? "image/*" : "video/*"}
                   onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
                   className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-blue/10 file:text-brand-blue hover:file:bg-brand-blue/20 border border-gray-300 rounded-lg px-3 py-2"
-                  required
+                  required={!isEditing}
                 />
               </div>
 
@@ -335,7 +382,9 @@ export function Gallery() {
               )}
 
               <Button type="submit" disabled={uploading} className="w-full bg-brand-blue mt-4">
-                {uploading ? `Uploading... ${uploadProgress}%` : "Upload to Gallery"}
+                {uploading 
+                  ? `${isEditing ? "Saving" : "Uploading"}... ${uploadProgress}%` 
+                  : isEditing ? "Save Changes" : "Upload to Gallery"}
               </Button>
             </form>
           </div>
