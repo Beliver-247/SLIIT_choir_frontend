@@ -13,9 +13,10 @@ interface NavigationProps {
   onCreateScheduleClick: () => void;
   onAnalyticsClick: () => void;
   onMyOrdersClick: () => void;
+  onGalleryClick: () => void;
   isLoggedIn: boolean;
   memberName: string;
-  currentPage: "home" | "members" | "auth-success" | "create-event" | "create-schedule" | "attendance" | "attendance-analytics" | "member-report" | "my-orders" | "merchandise-item";
+  currentPage: "home" | "members" | "auth-success" | "create-event" | "create-schedule" | "attendance" | "attendance-analytics" | "member-report" | "my-orders" | "merchandise-item" | "gallery";
 }
 
 export function Navigation({ 
@@ -26,6 +27,7 @@ export function Navigation({
   onCreateScheduleClick,
   onAnalyticsClick,
   onMyOrdersClick,
+  onGalleryClick,
   isLoggedIn, 
   memberName,
   currentPage 
@@ -56,6 +58,10 @@ export function Navigation({
                     <CalendarPlus className="h-4 w-4 text-brand-orange" />
                     Events
                   </a>
+                  <button onClick={onGalleryClick} className="flex items-center gap-2 text-brand-navy/80 hover:text-brand-orange transition-colors">
+                    <Sparkles className="h-4 w-4 text-brand-orange" />
+                    Gallery
+                  </button>
                   <a href="#donate" className="flex items-center gap-2 text-brand-navy/80 hover:text-brand-orange transition-colors">
                     <Gift className="h-4 w-4 text-brand-orange" />
                     Donate
@@ -186,6 +192,16 @@ export function Navigation({
                           {link.label}
                         </a>
                       ))}
+                      <button
+                        onClick={() => {
+                          onGalleryClick();
+                          closeMenu();
+                        }}
+                        className="flex items-center gap-3 rounded-2xl border border-brand-blue/15 bg-white px-4 py-3 text-sm font-medium text-brand-navy/80 shadow-sm hover:border-brand-orange/40 hover:text-brand-orange transition text-left"
+                      >
+                        <Sparkles className="h-4 w-4 text-brand-orange" />
+                        Gallery
+                      </button>
                     </div>
                   ) : (
                     <button
