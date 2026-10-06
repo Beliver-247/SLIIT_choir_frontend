@@ -38,6 +38,7 @@ export function Gallery() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedMedia, setSelectedMedia] = useState<GalleryItem | null>(null);
 
   const canUpload = isAdmin() || isModerator();
 
@@ -271,7 +272,10 @@ export function Gallery() {
                   </div>
                 )}
                 
-                <div className="aspect-video bg-gray-100 relative overflow-hidden flex items-center justify-center">
+                <div 
+                  className="aspect-video bg-gray-100 relative overflow-hidden flex items-center justify-center cursor-pointer"
+                  onClick={() => setSelectedMedia(item)}
+                >
                   {item.fileType === 'image' ? (
                     <img 
                       src={item.fileUrl} 
@@ -428,6 +432,48 @@ export function Gallery() {
                   : isEditing ? "Save Changes" : "Upload to Gallery"}
               </Button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Modal */}
+      {selectedMedia && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+          onClick={() => setSelectedMedia(null)}
+        >
+          <button 
+            onClick={(e) => { e.stopPropagation(); setSelectedMedia(null); }}
+            className="absolute right-6 top-6 text-white/70 hover:text-white transition-colors"
+          >
+            <X className="h-8 w-8" />
+          </button>
+          
+          <div 
+            className="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {selectedMedia.fileType === 'image' ? (
+              <img 
+                src={selectedMedia.fileUrl} 
+                alt={selectedMedia.title} 
+                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+              />
+            ) : (
+              <video 
+                src={selectedMedia.fileUrl} 
+                controls 
+                autoPlay
+                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl bg-black"
+              />
+            )}
+            
+            <div className="mt-6 text-center max-w-2xl mx-auto px-4">
+              <h3 className="text-2xl font-bold text-white">{selectedMedia.title}</h3>
+              {selectedMedia.description && (
+                <p className="text-gray-300 mt-2 text-sm">{selectedMedia.description}</p>
+              )}
+            </div>
           </div>
         </div>
       )}
