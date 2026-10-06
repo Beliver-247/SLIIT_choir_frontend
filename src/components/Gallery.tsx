@@ -272,10 +272,7 @@ export function Gallery() {
                   </div>
                 )}
                 
-                <div 
-                  className="aspect-video bg-gray-100 relative overflow-hidden flex items-center justify-center cursor-pointer"
-                  onClick={() => setSelectedMedia(item)}
-                >
+                <div className="aspect-video bg-gray-100 relative overflow-hidden flex items-center justify-center">
                   {item.fileType === 'image' ? (
                     <img 
                       src={item.fileUrl} 
