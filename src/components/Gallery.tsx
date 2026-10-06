@@ -38,6 +38,7 @@ export function Gallery() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedMedia, setSelectedMedia] = useState<GalleryItem | null>(null);
 
   const canUpload = isAdmin() || isModerator();
 
@@ -276,7 +277,8 @@ export function Gallery() {
                     <img 
                       src={item.fileUrl} 
                       alt={item.title} 
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer" 
+                      onClick={() => setSelectedMedia(item)}
                       loading="lazy"
                     />
                   ) : (
@@ -428,6 +430,37 @@ export function Gallery() {
                   : isEditing ? "Save Changes" : "Upload to Gallery"}
               </Button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {selectedMedia && (
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+          <div className="relative max-w-5xl w-full">
+            <button
+              onClick={() => setSelectedMedia(null)}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <X className="h-8 w-8" />
+            </button>
+            {selectedMedia.fileType === 'image' ? (
+              <img
+                src={selectedMedia.fileUrl}
+                alt={selectedMedia.title}
+                className="w-full h-auto max-h-[85vh] object-contain rounded-lg"
+              />
+            ) : (
+              <video
+                src={selectedMedia.fileUrl}
+                controls
+                autoPlay
+                className="w-full h-auto max-h-[85vh] object-contain rounded-lg bg-black"
+              />
+            )}
+            <div className="text-white mt-4">
+              <h3 className="text-xl font-bold">{selectedMedia.title}</h3>
+              {selectedMedia.description && <p className="text-gray-300 mt-2">{selectedMedia.description}</p>}
+            </div>
           </div>
         </div>
       )}
