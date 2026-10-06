@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Image, Video, Upload, X, Filter, Trash2, Edit2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { api, API_BASE_URL } from "../utils/api";
@@ -15,7 +15,9 @@ interface GalleryItem {
 }
 
 export function Gallery() {
-  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [allItems, setAllItems] = useState<GalleryItem[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -43,13 +45,9 @@ export function Gallery() {
     try {
       setLoading(true);
       setError(null);
-      let query = "?";
-      if (filterYear) query += `year=${filterYear}&`;
-      if (filterMonth) query += `month=${filterMonth}&`;
-      if (filterType) query += `fileType=${filterType}&`;
-
-      const data = await api.request(`/gallery${query}`);
-      setItems(data.data || []);
+      // Fetch all items once, we will filter locally for instant UI updates
+      const data = await api.request(`/gallery`);
+      setAllItems(data.data || []);
     } catch (err: any) {
       console.error("Failed to fetch gallery:", err);
       setError(err.message || "Failed to load gallery items.");
@@ -60,7 +58,25 @@ export function Gallery() {
 
   useEffect(() => {
     fetchGalleryItems();
+  }, []); // Only fetch once on mount
+
+  // Local filtering for instant results without hitting the backend or re-downloading media
+  const filteredItems = useMemo(() => {
+    return allItems.filter((item) => {
+      if (filterYear && item.year.toString() !== filterYear) return false;
+      if (filterMonth && item.month.toString() !== filterMonth) return false;
+      if (filterType && item.fileType !== filterType) return false;
+      return true;
+    });
+  }, [allItems, filterYear, filterMonth, filterType]);
+
+  // Reset to page 1 whenever filters change
+  useEffect(() => {
+    setCurrentPage(1);
   }, [filterYear, filterMonth, filterType]);
+
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const currentItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -229,11 +245,12 @@ export function Gallery() {
           <div className="text-center py-12 text-gray-500">Loading gallery...</div>
         ) : error ? (
           <div className="text-center py-12 text-red-500">{error}</div>
-        ) : items.length === 0 ? (
+        ) : filteredItems.length === 0 ? (
           <div className="text-center py-12 text-gray-500">No items found matching your filters.</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map((item) => (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentItems.map((item) => (
               <div key={item._id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 group relative">
                 {canUpload && (
                   <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
@@ -284,7 +301,31 @@ export function Gallery() {
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-4 mt-12">
+                <Button 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="bg-white text-brand-navy border border-gray-300 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Previous
+                </Button>
+                <span className="text-sm text-gray-500 font-medium">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="bg-white text-brand-navy border border-gray-300 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
